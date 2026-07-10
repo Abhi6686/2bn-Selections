@@ -9,11 +9,12 @@ const transporter =
         host: env.smtpHost,
         port: env.smtpPort,
         secure: env.smtpPort === 465,
+        family: 4, // Force IPv4 to prevent IPv6 network unreachable errors on Render
         auth:
           env.smtpUser && env.smtpPass
             ? { user: env.smtpUser, pass: env.smtpPass }
             : undefined,
-      })
+      } as any)
     : null;
 
 export async function sendEmail(input: {
@@ -33,11 +34,12 @@ export async function sendEmail(input: {
         host: org.smtpHost,
         port: org.smtpPort,
         secure: org.smtpPort === 465,
+        family: 4, // Force IPv4
         auth: {
           user: org.smtpUser,
           pass: org.smtpPass,
         },
-      });
+      } as any);
       fromEmail = org.smtpFrom || org.smtpUser;
     }
   }

@@ -121,11 +121,12 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
           host: body.smtpHost,
           port: Number(body.smtpPort),
           secure: Number(body.smtpPort) === 465,
+          family: 4, // Force IPv4 to bypass Render IPv6 routing issues
           auth: {
             user: body.smtpUser,
             pass: password,
           },
-        });
+        } as any);
 
         const testDestination = body.testTo || body.smtpUser;
 
