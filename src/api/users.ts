@@ -18,7 +18,7 @@ export async function inviteUser(input: {
   name: string;
   email: string;
   role: "admin" | "project_manager";
-}): Promise<{ user: ApiUser }> {
+}): Promise<{ user: ApiUser; emailSent?: boolean; message?: string }> {
   return apiFetch("/api/users/invite", {
     method: "POST",
     body: JSON.stringify(input),
