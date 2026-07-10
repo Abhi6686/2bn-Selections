@@ -12,7 +12,7 @@
     "dev:web": "vite",
     "dev:api": "npm run dev --workspace=@2bn/server",
     "build": "npm run build --workspace=@2bn/shared && npm run build --workspace=@2bn/server && tsc -b && vite build",
-    "build:web": "tsc -b && vite build",
+    "build:web": "npm run build --workspace=@2bn/shared && tsc -b && vite build",
     "build:api": "npm run build --workspace=@2bn/shared && npm run build --workspace=@2bn/server",
     "start:api": "npm run start --workspace=@2bn/server",
     "seed": "npm run seed --workspace=@2bn/server",
