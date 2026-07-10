@@ -24,10 +24,10 @@ services:
   # Frontend React SPA Static Site
   - type: web
     name: selections-web
-    env: static
+    runtime: static
     plan: free
     buildCommand: npm install && npm run build:web
-    publishPath: dist
+    staticPublishPath: dist
     routes:
       # Rewrite all routes to index.html for React Router SPA support
       - type: rewrite
