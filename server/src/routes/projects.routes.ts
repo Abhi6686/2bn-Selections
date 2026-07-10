@@ -964,7 +964,7 @@ async function inviteHomeownerInternal(input: {
       role: "end_user",
       orgId,
       status: "invited",
-      passwordHash: await hashPassword(generateSecureToken()),
+      passwordHash: generateSecureToken(), // No need to hash a temp password since status is "invited"
     });
   }
 

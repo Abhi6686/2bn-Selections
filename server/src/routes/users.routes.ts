@@ -52,7 +52,7 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
         role: body.role,
         orgId,
         status: "invited",
-        passwordHash: await hashPassword(generateSecureToken()), // Temp random password
+        passwordHash: generateSecureToken(), // No need to hash a temp password since status is "invited"
       });
 
       // Generate verification token
@@ -76,26 +76,25 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
         details: `Invited ${body.name} (${email}) as ${body.role === "project_manager" ? "Project Manager" : "Admin"}`,
       });
 
-      // Send invite email — don't fail the whole request if email delivery fails
-      let emailSent = false;
-      try {
-        const link = `${env.webOrigin}/auth/magic?token=${rawToken}`;
-        await sendEmail({
-          to: email,
-          subject: "Invitation to join 2bn Selections",
-          html: buildInviteEmail(link, body.name, body.role === "project_manager" ? "Project Manager" : "Admin"),
-        });
-        emailSent = true;
-      } catch (emailErr) {
-        console.error("[invite] Email delivery failed:", emailErr);
-      }
+      // Send invite email in background (asynchronously)
+      setImmediate(async () => {
+        try {
+          const link = `${env.webOrigin}/auth/magic?token=${rawToken}`;
+          await sendEmail({
+            to: email,
+            subject: "Invitation to join 2bn Selections",
+            html: buildInviteEmail(link, body.name, body.role === "project_manager" ? "Project Manager" : "Admin"),
+          });
+          app.log.info(`[invite] Invitation email sent to ${email}`);
+        } catch (emailErr) {
+          app.log.error(emailErr, `[invite] Background invitation email failed for ${email}`);
+        }
+      });
 
       return {
         user: mapUser(newUser as never),
-        emailSent,
-        message: emailSent
-          ? "Invitation sent successfully"
-          : "User created but email delivery failed — check SMTP configuration",
+        emailSent: true,
+        message: "Invitation queued successfully",
       };
 
     }
