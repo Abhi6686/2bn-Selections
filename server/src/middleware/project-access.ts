@@ -45,6 +45,6 @@ export async function requireProjectAccess(
     (await ProjectMemberModel.exists({ projectId: project._id, userId }));
 
   if (!isEndUser) {
-    reply.code(403).send({ error: "Forbidden" });
+    return reply.code(403).send({ error: "Forbidden" });
   }
 }

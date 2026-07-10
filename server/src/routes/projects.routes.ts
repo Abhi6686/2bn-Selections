@@ -53,13 +53,13 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/projects",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = createProjectSchema.parse(request.body);
       const user = request.user!;
 
       let orgId = user.orgId;
-      if (!orgId && user.role === "admin") {
+      if (!orgId && (user.role === "admin" || user.role === "project_manager")) {
         const defaultOrg = await import("../models/Organization.js").then((module) =>
           module.OrganizationModel.findOne({ slug: "2bn" }),
         );
@@ -581,7 +581,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/projects/:projectId/resend-signed-proposal",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { projectId } = getProjectParams(request);
       const project = await ProjectModel.findById(projectId);
@@ -748,7 +748,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/projects/:projectId/unlock-categories",
-    { preHandler: [requireAuth, requireRole("admin", "client"), requireProjectAccess] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client"), requireProjectAccess] },
     async (request, reply) => {
       const { projectId } = getProjectParams(request);
       const project = await ProjectModel.findById(projectId);
@@ -781,7 +781,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/projects/:projectId/toggle-lock",
-    { preHandler: [requireAuth, requireRole("admin", "client"), requireProjectAccess] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client"), requireProjectAccess] },
     async (request, reply) => {
       const { projectId } = getProjectParams(request);
       const project = await ProjectModel.findById(projectId);
@@ -884,7 +884,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.delete(
     "/api/projects/:projectId",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { projectId } = getProjectParams(request);
       const permanent = (request.query as { permanent?: string }).permanent === "true";
@@ -920,7 +920,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/projects/:projectId/restore",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { projectId } = getProjectParams(request);
       const project = await ProjectModel.findById(projectId);

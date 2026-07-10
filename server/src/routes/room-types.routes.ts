@@ -40,7 +40,7 @@ export async function registerRoomTypeRoutes(app: FastifyInstance): Promise<void
 
   app.post(
     "/api/room-types",
-    { preHandler: [requireAuth, requireRole("admin")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = createRoomTypeSchema.parse(request.body);
       const user = request.user!;
@@ -90,7 +90,7 @@ export async function registerRoomTypeRoutes(app: FastifyInstance): Promise<void
 
   app.patch(
     "/api/room-types/:roomTypeId",
-    { preHandler: [requireAuth, requireRole("admin")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = updateRoomTypeSchema.parse(request.body);
       const { roomTypeId } = request.params as { roomTypeId: string };
@@ -131,7 +131,7 @@ export async function registerRoomTypeRoutes(app: FastifyInstance): Promise<void
 
   app.delete(
     "/api/room-types/:roomTypeId",
-    { preHandler: [requireAuth, requireRole("admin")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { roomTypeId } = request.params as { roomTypeId: string };
 

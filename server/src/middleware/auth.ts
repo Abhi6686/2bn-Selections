@@ -34,11 +34,11 @@ export function requireRole(...roles: string[]) {
     reply: FastifyReply,
   ): Promise<void> {
     if (!request.user) {
-      reply.code(401).send({ error: "Unauthorized" });
-      return;
+      return reply.code(401).send({ error: "Unauthorized" });
     }
+    console.info(`[auth] requireRole check: allowed=[${roles.join(", ")}], user=${request.user.email}, role=${request.user.role}`);
     if (!roles.includes(request.user.role)) {
-      reply.code(403).send({ error: "Forbidden" });
+      return reply.code(403).send({ error: "Forbidden" });
     }
   };
 }

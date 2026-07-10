@@ -69,11 +69,11 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/master-categories/sections",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const user = request.user!;
       let orgId = user.orgId;
-      if (!orgId && user.role === "admin") {
+      if (!orgId && (user.role === "admin" || user.role === "project_manager")) {
         const { OrganizationModel } = await import("../models/Organization.js");
         const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
         if (defaultOrg) {
@@ -113,7 +113,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.patch(
     "/api/master-categories/sections/:id",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
       const user = request.user!;
@@ -151,7 +151,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.delete(
     "/api/master-categories/sections/:id",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
       const user = request.user!;
@@ -265,13 +265,13 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/library",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = createLibraryItemSchema.parse(request.body);
       const user = request.user!;
 
       let orgId = user.orgId;
-      if (!orgId && user.role === "admin") {
+      if (!orgId && (user.role === "admin" || user.role === "project_manager")) {
         const { OrganizationModel } = await import("../models/Organization.js");
         const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
         if (defaultOrg) {
@@ -307,7 +307,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.patch(
     "/api/library/:id",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
       const body = updateLibraryItemSchema.parse(request.body);
@@ -347,7 +347,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.delete(
     "/api/library/:id",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
       const user = request.user!;
@@ -375,7 +375,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
   app.post(
     "/api/library/:id/restore",
-    { preHandler: [requireAuth, requireRole("admin", "client")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
       const user = request.user!;

@@ -22,13 +22,13 @@ export async function registerThemeRoutes(app: FastifyInstance): Promise<void> {
 
   app.post(
     "/api/themes",
-    { preHandler: [requireAuth, requireRole("admin")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = createThemeSchema.parse(request.body);
       const user = request.user!;
 
       if (!user.orgId) {
-        return reply.code(400).send({ error: "Admin must belong to an organization" });
+        return reply.code(400).send({ error: "User must belong to an organization" });
       }
 
       const theme = await ThemeModel.create({
@@ -52,7 +52,7 @@ export async function registerThemeRoutes(app: FastifyInstance): Promise<void> {
 
   app.patch(
     "/api/themes/:themeId",
-    { preHandler: [requireAuth, requireRole("admin")] },
+    { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const body = createThemeSchema.partial().parse(request.body);
       const theme = await ThemeModel.findById(
