@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { requireAuth, requireRole } from "../middleware/auth.js";
 import { OrganizationModel } from "../models/Organization.js";
 import nodemailer from "nodemailer";
+import dns from "node:dns";
 
 export async function registerSettingsRoutes(app: FastifyInstance): Promise<void> {
   // Get org settings (Admin only)
@@ -122,6 +123,7 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
           port: Number(body.smtpPort),
           secure: Number(body.smtpPort) === 465,
           family: 4, // Force IPv4 to bypass Render IPv6 routing issues
+          lookup: (hostname, options, callback) => dns.lookup(hostname, { family: 4 }, callback),
           auth: {
             user: body.smtpUser,
             pass: password,

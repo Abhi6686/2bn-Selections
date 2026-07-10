@@ -1,7 +1,12 @@
 import nodemailer from "nodemailer";
+import dns from "node:dns";
 import { env } from "../config/env.js";
 
 import { OrganizationModel } from "../models/Organization.js";
+
+const dnsLookup = (hostname: string, options: any, callback: any) => {
+  dns.lookup(hostname, { family: 4 }, callback);
+};
 
 const transporter =
   env.smtpHost.length > 0
@@ -10,6 +15,7 @@ const transporter =
         port: env.smtpPort,
         secure: env.smtpPort === 465,
         family: 4, // Force IPv4 to prevent IPv6 network unreachable errors on Render
+        lookup: dnsLookup,
         auth:
           env.smtpUser && env.smtpPass
             ? { user: env.smtpUser, pass: env.smtpPass }
@@ -35,6 +41,7 @@ export async function sendEmail(input: {
         port: org.smtpPort,
         secure: org.smtpPort === 465,
         family: 4, // Force IPv4
+        lookup: dnsLookup,
         auth: {
           user: org.smtpUser,
           pass: org.smtpPass,
