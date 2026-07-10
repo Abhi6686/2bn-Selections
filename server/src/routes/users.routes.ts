@@ -76,15 +76,28 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
         details: `Invited ${body.name} (${email}) as ${body.role === "project_manager" ? "Project Manager" : "Admin"}`,
       });
 
-      // Send invite email
-      const link = `${env.webOrigin}/auth/magic?token=${rawToken}`;
-      await sendEmail({
-        to: email,
-        subject: "Invitation to join 2bn Selections",
-        html: buildInviteEmail(link, body.name, body.role === "project_manager" ? "Project Manager" : "Admin"),
-      });
+      // Send invite email — don't fail the whole request if email delivery fails
+      let emailSent = false;
+      try {
+        const link = `${env.webOrigin}/auth/magic?token=${rawToken}`;
+        await sendEmail({
+          to: email,
+          subject: "Invitation to join 2bn Selections",
+          html: buildInviteEmail(link, body.name, body.role === "project_manager" ? "Project Manager" : "Admin"),
+        });
+        emailSent = true;
+      } catch (emailErr) {
+        console.error("[invite] Email delivery failed:", emailErr);
+      }
 
-      return { user: mapUser(newUser as never) };
+      return {
+        user: mapUser(newUser as never),
+        emailSent,
+        message: emailSent
+          ? "Invitation sent successfully"
+          : "User created but email delivery failed — check SMTP configuration",
+      };
+
     }
   );
 

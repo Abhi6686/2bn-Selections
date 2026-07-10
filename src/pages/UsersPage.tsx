@@ -27,8 +27,12 @@ function InviteModal({ isOpen, onClose }: InviteModalProps) {
     }
 
     try {
-      await inviteMutation.mutateAsync({ name, email, role });
-      toast.success("Invitation sent successfully!");
+      const result = await inviteMutation.mutateAsync({ name, email, role });
+      if (result.emailSent === false) {
+        toast.success(`${name} added — but invite email failed to send. Check SMTP settings in Render.`, { duration: 6000 });
+      } else {
+        toast.success(`Invitation email sent to ${email}!`);
+      }
       setName("");
       setEmail("");
       setRole("project_manager");
@@ -36,6 +40,7 @@ function InviteModal({ isOpen, onClose }: InviteModalProps) {
     } catch (err: any) {
       toast.error(err.message || "Failed to send invitation");
     }
+
   };
 
   if (!isOpen) return null;
