@@ -22,8 +22,9 @@ services:
           property: host
 
   # Frontend React SPA Static Site
-  - type: static
+  - type: web
     name: selections-web
+    runtime: static
     buildCommand: npm install && npm run build:web
     staticPublishPath: dist
     routes:
