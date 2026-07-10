@@ -1,4 +1,5 @@
-export const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+const rawApiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+export const API_BASE_URL = rawApiUrl && !rawApiUrl.startsWith("http") ? `https://${rawApiUrl}` : rawApiUrl;
 
 export const isApiMode = API_BASE_URL.length > 0 || import.meta.env.DEV;
 

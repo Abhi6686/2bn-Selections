@@ -29,8 +29,12 @@ export async function buildApp() {
   });
 
   await app.register(helmet, { contentSecurityPolicy: false });
+  const corsOrigin = env.isDevelopment
+    ? true
+    : (env.webOrigin && !env.webOrigin.startsWith("http") ? `https://${env.webOrigin}` : env.webOrigin);
+
   await app.register(cors, {
-    origin: env.isDevelopment ? true : env.webOrigin,
+    origin: corsOrigin,
     credentials: true,
   });
   await app.register(cookie);
