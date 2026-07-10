@@ -110,6 +110,7 @@ export async function requestMagicLink(email: string): Promise<void> {
     to: user.email,
     subject: "Your 2bn Selections sign-in link",
     html: buildMagicLinkEmail(link),
+    orgId: user.orgId?.toString(),
   });
 }
 

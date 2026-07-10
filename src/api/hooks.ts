@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as projectsApi from "./projects";
 import * as usersApi from "./users";
+import * as settingsApi from "./settings";
 import type { ApiLibraryItem, ApiSelectionTemplate, ApiRoomType } from "@2bn/shared";
 
 
@@ -22,6 +23,7 @@ export const queryKeys = {
   roomTypes: ["room-types"] as const,
   users: ["users"] as const,
   activities: ["users", "activities"] as const,
+  settings: ["settings"] as const,
 };
 
 
@@ -487,6 +489,29 @@ export function usePermanentlyDeleteUser() {
       queryClient.invalidateQueries({ queryKey: queryKeys.users });
       queryClient.invalidateQueries({ queryKey: queryKeys.activities });
     },
+  });
+}
+
+export function useOrgSettings() {
+  return useQuery({
+    queryKey: queryKeys.settings,
+    queryFn: settingsApi.fetchOrgSettings,
+  });
+}
+
+export function useUpdateOrgSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: settingsApi.updateOrgSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.settings });
+    },
+  });
+}
+
+export function useTestSmtp() {
+  return useMutation({
+    mutationFn: settingsApi.testSmtp,
   });
 }
 

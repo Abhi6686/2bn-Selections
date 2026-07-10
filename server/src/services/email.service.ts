@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 
+import { OrganizationModel } from "../models/Organization.js";
+
 const transporter =
   env.smtpHost.length > 0
     ? nodemailer.createTransport({
@@ -19,8 +21,28 @@ export async function sendEmail(input: {
   subject: string;
   html: string;
   attachments?: Array<{ filename: string; path?: string; content?: Buffer }>;
+  orgId?: string;
 }): Promise<void> {
-  if (!transporter) {
+  let activeTransporter = transporter;
+  let fromEmail = env.smtpFrom;
+
+  if (input.orgId) {
+    const org = await OrganizationModel.findById(input.orgId);
+    if (org && org.smtpHost && org.smtpPort && org.smtpUser && org.smtpPass) {
+      activeTransporter = nodemailer.createTransport({
+        host: org.smtpHost,
+        port: org.smtpPort,
+        secure: org.smtpPort === 465,
+        auth: {
+          user: org.smtpUser,
+          pass: org.smtpPass,
+        },
+      });
+      fromEmail = org.smtpFrom || org.smtpUser;
+    }
+  }
+
+  if (!activeTransporter) {
     console.info(`[email:dev] To: ${input.to}\nSubject: ${input.subject}\n${input.html}`);
     if (input.attachments && input.attachments.length > 0) {
       console.info(`[email:dev] Attachments: ${input.attachments.map(a => a.filename).join(", ")}`);
@@ -28,8 +50,8 @@ export async function sendEmail(input: {
     return;
   }
 
-  await transporter.sendMail({
-    from: env.smtpFrom,
+  await activeTransporter.sendMail({
+    from: fromEmail,
     to: input.to,
     subject: input.subject,
     html: input.html,

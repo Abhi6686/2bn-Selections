@@ -494,6 +494,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
                   content: pdfBuffer,
                 },
               ],
+              orgId: project.orgId.toString(),
             });
           }
 
@@ -621,6 +622,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
                   content: project.proposalPdfBuffer,
                 },
               ],
+              orgId: project.orgId.toString(),
             });
           }
 
@@ -733,6 +735,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
             to: pmEmail,
             subject: `Selections Completed & Submitted — ${project.name}`,
             html: emailHtml,
+            orgId: project.orgId.toString(),
           });
         } catch (emailErr) {
           app.log.error(emailErr, `Failed to send selections submitted email to PM ${pmEmail}`);
@@ -1000,5 +1003,6 @@ async function inviteHomeownerInternal(input: {
     to: input.email,
     subject: "You're invited to 2bn Selections",
     html: buildMagicLinkEmail(link),
+    orgId: project.orgId.toString(),
   });
 }

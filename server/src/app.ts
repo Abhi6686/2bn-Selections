@@ -16,6 +16,7 @@ import { registerSelectionRoutes } from "./routes/selections.routes.js";
 import { registerThemeRoutes } from "./routes/themes.routes.js";
 import { registerSelectionTemplateRoutes } from "./routes/selection-templates.routes.js";
 import { registerRoomTypeRoutes } from "./routes/room-types.routes.js";
+import { registerSettingsRoutes } from "./routes/settings.routes.js";
 
 
 export async function buildApp() {
@@ -85,6 +86,7 @@ export async function buildApp() {
   await registerThemeRoutes(app);
   await registerSelectionTemplateRoutes(app);
   await registerRoomTypeRoutes(app);
+  await registerSettingsRoutes(app);
 
 
 

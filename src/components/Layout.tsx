@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { LayoutDashboard, Library, Plus, FileText, LogOut, Sun, Moon, Sparkles, LayoutPanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, Library, Plus, FileText, LogOut, Sun, Moon, Sparkles, LayoutPanelLeft, Users, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { PasswordModal } from "./PasswordModal";
@@ -30,6 +30,9 @@ export function Layout() {
         { to: "/room-configurator", label: "Room Configurator", icon: LayoutPanelLeft },
         ...((role === "admin" || role === "project_manager")
           ? [{ to: "/team", label: "Team Management", icon: Users }]
+          : []),
+        ...(role === "admin"
+          ? [{ to: "/settings", label: "System Settings", icon: Settings }]
           : []),
       ];
 

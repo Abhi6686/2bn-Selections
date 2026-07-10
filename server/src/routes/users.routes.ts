@@ -84,6 +84,7 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
             to: email,
             subject: "Invitation to join 2bn Selections",
             html: buildInviteEmail(link, body.name, body.role === "project_manager" ? "Project Manager" : "Admin"),
+            orgId,
           });
           app.log.info(`[invite] Invitation email sent to ${email}`);
         } catch (emailErr) {
