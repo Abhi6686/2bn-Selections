@@ -9,6 +9,7 @@ export interface OrgSettings {
   smtpUser: string;
   smtpFrom: string;
   hasSmtpPass: boolean;
+  hasResendApiKey: boolean;
 }
 
 export async function fetchOrgSettings(): Promise<OrgSettings> {
@@ -16,7 +17,10 @@ export async function fetchOrgSettings(): Promise<OrgSettings> {
 }
 
 export async function updateOrgSettings(
-  input: Partial<Omit<OrgSettings, "id" | "slug" | "hasSmtpPass">> & { smtpPass?: string }
+  input: Partial<Omit<OrgSettings, "id" | "slug" | "hasSmtpPass" | "hasResendApiKey">> & { 
+    smtpPass?: string;
+    resendApiKey?: string;
+  }
 ): Promise<{ success: boolean; org: OrgSettings }> {
   return apiFetch("/api/settings/org", {
     method: "PUT",
@@ -33,6 +37,17 @@ export async function testSmtp(input: {
   testTo: string;
 }): Promise<{ success: boolean; message: string }> {
   return apiFetch("/api/settings/test-smtp", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function testResend(input: {
+  resendApiKey?: string;
+  smtpFrom?: string;
+  testTo: string;
+}): Promise<{ success: boolean; message: string }> {
+  return apiFetch("/api/settings/test-resend", {
     method: "POST",
     body: JSON.stringify(input),
   });

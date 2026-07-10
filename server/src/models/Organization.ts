@@ -10,6 +10,7 @@ const organizationSchema = new Schema(
     smtpUser: { type: String },
     smtpPass: { type: String },
     smtpFrom: { type: String },
+    resendApiKey: { type: String },
   },
   { timestamps: true },
 );

@@ -30,27 +30,75 @@ export async function sendEmail(input: {
   attachments?: Array<{ filename: string; path?: string; content?: Buffer }>;
   orgId?: string;
 }): Promise<void> {
+  // 1. Resolve configuration priority
+  let resendApiKey = env.resendApiKey;
   let activeTransporter = transporter;
   let fromEmail = env.smtpFrom;
+  let useResend = !!resendApiKey;
 
   if (input.orgId) {
     const org = await OrganizationModel.findById(input.orgId);
-    if (org && org.smtpHost && org.smtpPort && org.smtpUser && org.smtpPass) {
-      activeTransporter = nodemailer.createTransport({
-        host: org.smtpHost,
-        port: org.smtpPort,
-        secure: org.smtpPort === 465,
-        family: 4, // Force IPv4
-        lookup: dnsLookup,
-        auth: {
-          user: org.smtpUser,
-          pass: org.smtpPass,
-        },
-      } as any);
-      fromEmail = org.smtpFrom || org.smtpUser;
+    if (org) {
+      if (org.resendApiKey) {
+        resendApiKey = org.resendApiKey;
+        useResend = true;
+      } else if (org.smtpHost && org.smtpPort && org.smtpUser && org.smtpPass) {
+        activeTransporter = nodemailer.createTransport({
+          host: org.smtpHost,
+          port: org.smtpPort,
+          secure: org.smtpPort === 465,
+          family: 4, // Force IPv4
+          lookup: dnsLookup,
+          auth: {
+            user: org.smtpUser,
+            pass: org.smtpPass,
+          },
+        } as any);
+        useResend = false;
+      }
+      
+      if (org.smtpFrom) {
+        fromEmail = org.smtpFrom;
+      } else if (org.smtpUser) {
+        fromEmail = org.smtpUser;
+      }
     }
   }
 
+  // 2. Route via Resend HTTP API if active
+  if (useResend && resendApiKey) {
+    console.info(`[email] Routing via Resend HTTP API to: ${input.to}`);
+    const resendBody = {
+      from: fromEmail,
+      to: [input.to],
+      subject: input.subject,
+      html: input.html,
+      attachments: input.attachments?.map((a) => ({
+        filename: a.filename,
+        content: a.content ? a.content.toString("base64") : undefined,
+        path: a.path,
+      })),
+    };
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify(resendBody),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Resend HTTP API error (status ${response.status}): ${errText}`);
+    }
+
+    console.info(`[email] Sent successfully via Resend HTTP API to ${input.to}`);
+    return;
+  }
+
+  // 3. Route via standard SMTP
   if (!activeTransporter) {
     console.info(`[email:dev] To: ${input.to}\nSubject: ${input.subject}\n${input.html}`);
     if (input.attachments && input.attachments.length > 0) {

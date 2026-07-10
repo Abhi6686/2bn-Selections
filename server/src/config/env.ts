@@ -39,5 +39,6 @@ export const env = {
   seedClientPassword: process.env.SEED_CLIENT_PASSWORD ?? "2BN-Client-2026!",
   changeOrderMinimum: Number(process.env.CHANGE_ORDER_MINIMUM ?? "500"),
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
+  resendApiKey: process.env.RESEND_API_KEY ?? "",
   isDevelopment: (process.env.NODE_ENV ?? "development") !== "production",
 };

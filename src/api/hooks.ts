@@ -515,5 +515,11 @@ export function useTestSmtp() {
   });
 }
 
+export function useTestResend() {
+  return useMutation({
+    mutationFn: settingsApi.testResend,
+  });
+}
+
 
 

@@ -29,6 +29,7 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
         smtpUser: org.smtpUser || "",
         smtpFrom: org.smtpFrom || "",
         hasSmtpPass: !!org.smtpPass,
+        hasResendApiKey: !!org.resendApiKey,
       };
     }
   );
@@ -50,6 +51,7 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
         smtpUser?: string;
         smtpPass?: string;
         smtpFrom?: string;
+        resendApiKey?: string;
       };
 
       const org = await OrganizationModel.findById(orgId);
@@ -68,6 +70,13 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
         org.smtpPass = body.smtpPass;
       }
 
+      // Only update Resend API Key if they sent a new non-empty key
+      if (body.resendApiKey !== undefined && body.resendApiKey.trim() !== "" && body.resendApiKey !== "••••••••") {
+        org.resendApiKey = body.resendApiKey;
+      } else if (body.resendApiKey === "") {
+        org.resendApiKey = ""; // allow clearing
+      }
+
       await org.save();
 
       return {
@@ -81,6 +90,7 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
           smtpUser: org.smtpUser || "",
           smtpFrom: org.smtpFrom || "",
           hasSmtpPass: !!org.smtpPass,
+          hasResendApiKey: !!org.resendApiKey,
         },
       };
     }
@@ -152,6 +162,84 @@ export async function registerSettingsRoutes(app: FastifyInstance): Promise<void
         });
 
         return { success: true, message: `Diagnostic test email sent successfully to ${testDestination}` };
+      } catch (err: any) {
+        return reply.code(500).send({
+          success: false,
+          error: err?.message || String(err),
+          details: err,
+        });
+      }
+    }
+  );
+
+  // Test custom Resend configuration before saving (Admin only)
+  app.post(
+    "/api/settings/test-resend",
+    { preHandler: [requireAuth, requireRole("admin")] },
+    async (request, reply) => {
+      const body = request.body as {
+        resendApiKey?: string;
+        smtpFrom?: string;
+        testTo: string;
+      };
+
+      const orgId = request.user!.orgId;
+      if (!orgId) {
+        return reply.code(400).send({ error: "User is not associated with an organization" });
+      }
+
+      let apiKey = body.resendApiKey;
+      if (!apiKey || apiKey === "••••••••") {
+        const org = await OrganizationModel.findById(orgId);
+        if (org && org.resendApiKey) {
+          apiKey = org.resendApiKey;
+        }
+      }
+
+      if (!apiKey) {
+        return reply.code(400).send({ error: "Missing Resend API Key" });
+      }
+
+      const fromEmail = body.smtpFrom || "onboarding@resend.dev";
+      const testDestination = body.testTo;
+
+      try {
+        const resendBody = {
+          from: fromEmail,
+          to: [testDestination],
+          subject: "2bn Selections — Resend Realtime Diagnostic Test",
+          html: `
+            <div style="font-family: system-ui, sans-serif; max-width: 480px; margin: 0 auto; border: 1px solid #C5A028; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+              <h2 style="color: #0f3e20; margin-top: 0; border-bottom: 2px solid #C5A028; padding-bottom: 8px;">Resend Diagnostic Success!</h2>
+              <p>Your custom Resend HTTP API email configuration has been tested successfully!</p>
+              <div style="background-color: #f5f7f5; padding: 12px; border-radius: 6px; font-size: 13px; color: #444; border-left: 4px solid #0f3e20; margin: 16px 0;">
+                <strong>API Provider:</strong> Resend (HTTP Port 443)<br/>
+                <strong>Tested Sender:</strong> ${fromEmail}<br/>
+                <strong>Tested Destination:</strong> ${testDestination}
+              </div>
+              <p style="font-size: 12px; color: #666; margin-bottom: 0;">This email confirms that your configuration is correct and bypasses Render SMTP port blocks. You can now save your settings.</p>
+            </div>
+          `,
+        };
+
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(resendBody),
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          return reply.code(400).send({
+            success: false,
+            error: `Resend HTTP API error (status ${response.status}): ${errText}`,
+          });
+        }
+
+        return { success: true, message: `Diagnostic test email sent successfully to ${testDestination} via Resend` };
       } catch (err: any) {
         return reply.code(500).send({
           success: false,
