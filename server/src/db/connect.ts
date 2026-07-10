@@ -39,13 +39,44 @@ function formatMongoConnectionError(error: unknown): Error {
   return error instanceof Error ? error : new Error(message);
 }
 
+/** Ensure the MongoDB URI always contains an explicit database name.
+ *  If the URI ends right after the host (e.g. Render omits /Selection_Sheet),
+ *  MongoDB defaults to "test" — which causes auth failures in production.
+ */
+function ensureDbName(uri: string, dbName = "Selection_Sheet"): string {
+  try {
+    // Standard: mongodb+srv://user:pass@host/dbname?options
+    // OR:       mongodb://host:port/dbname?options
+    // We check if there's already a db name segment between the last "/" and "?"
+    const withoutProtocol = uri.replace(/^mongodb(\+srv)?:\/\//, "");
+    const atIndex = withoutProtocol.indexOf("@");
+    const afterAt = atIndex >= 0 ? withoutProtocol.slice(atIndex + 1) : withoutProtocol;
+    const slashIndex = afterAt.indexOf("/");
+
+    if (slashIndex === -1) {
+      // No slash at all — append /dbname
+      return uri.includes("?") ? uri.replace("?", `/${dbName}?`) : `${uri}/${dbName}`;
+    }
+
+    const dbSegment = afterAt.slice(slashIndex + 1).split("?")[0];
+    if (!dbSegment || dbSegment === "test") {
+      // Missing or defaulting to "test" — replace with correct db name
+      return uri.replace(`/${dbSegment}`, `/${dbName}`).replace(/\/\?/, `/${dbName}?`);
+    }
+
+    return uri; // already has the right DB name
+  } catch {
+    return uri;
+  }
+}
+
 export async function connectDatabase(): Promise<void> {
   configureDnsForAtlas();
   mongoose.set("strictQuery", true);
 
-  const connectionCandidates = [env.mongodbUri, env.mongodbUriStandard].filter(
-    (uri): uri is string => Boolean(uri),
-  );
+  const connectionCandidates = [env.mongodbUri, env.mongodbUriStandard]
+    .filter((uri): uri is string => Boolean(uri))
+    .map((uri) => ensureDbName(uri));
 
   let lastError: unknown;
 
@@ -69,6 +100,7 @@ export async function connectDatabase(): Promise<void> {
 
   throw formatMongoConnectionError(lastError);
 }
+
 
 export async function disconnectDatabase(): Promise<void> {
   await mongoose.disconnect();
