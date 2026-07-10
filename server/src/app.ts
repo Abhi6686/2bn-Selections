@@ -29,9 +29,30 @@ export async function buildApp() {
   });
 
   await app.register(helmet, { contentSecurityPolicy: false });
-  const corsOrigin = env.isDevelopment
-    ? true
-    : (env.webOrigin && !env.webOrigin.startsWith("http") ? `https://${env.webOrigin}` : env.webOrigin);
+  const corsOrigin = (origin: string | undefined, callback: (err: Error | null, allow: boolean) => void) => {
+    if (env.isDevelopment) {
+      callback(null, true);
+      return;
+    }
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const cleanOrigin = origin.replace(/^https?:\/\//, "");
+    const cleanWebOrigin = env.webOrigin ? env.webOrigin.replace(/^https?:\/\//, "") : "";
+
+    if (
+      cleanOrigin === cleanWebOrigin ||
+      cleanOrigin.startsWith("localhost:") ||
+      cleanOrigin === "localhost" ||
+      cleanOrigin.endsWith(".onrender.com")
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"), false);
+    }
+  };
 
   await app.register(cors, {
     origin: corsOrigin,
