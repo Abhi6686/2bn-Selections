@@ -1,0 +1,41 @@
+services:
+  # Backend Fastify API Service
+  - type: web
+    name: selections-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEB_ORIGIN
+        fromService:
+          name: selections-web
+          type: web
+          property: host
+
+  # Frontend React SPA Static Site
+  - type: web
+    name: selections-web
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build:web
+    publishPath: dist
+    routes:
+      # Rewrite all routes to index.html for React Router SPA support
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: selections-api
+          type: web
+          property: host

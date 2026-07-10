@@ -18,6 +18,12 @@ A project manager logs in, creates a project, picks one appliance per category (
 
 **Status:** Working client-side prototype, deployable to Vercel, with admin login.
 
+### Master Selections List (categories)
+
+The full **Master Selections List** is parsed into `src/data/masterCategories.json` (**13 sections**, **51 category groups**). The appliance catalog in `selectionLibrary.json` is mapped into master groups (e.g. `Kitchen - Appliances`, `Bathroom - Plumbing Fixtures`). The new-project wizard steps one **selection slot** at a time (refrigerator, range, dishwasher, etc.) using each item’s `categoryKey`.
+
+Confirmed product decisions for V2 are documented in **`docs/V2_BACKEND_PLAN.md`** (§0, §15–§18): optional second homeowner, draw/typed CO signatures with IP/GPS audit, admin-managed themes, 2BN branding, and self-host server sizing.
+
 ---
 
 ## 2. Current functionality (what it does today)

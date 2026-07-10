@@ -20,8 +20,13 @@ export function ProductImage({ item, imageUrl, alt, className = "" }: ProductIma
   }
 
   return (
-    <div className={`product-image ${className}`}>
-      <img src={source} alt={alt} loading="lazy" />
+    <div className={`w-full h-full flex items-center justify-center bg-muted/10 overflow-hidden ${className}`}>
+      <img 
+        src={source} 
+        alt={alt} 
+        loading="lazy" 
+        className="max-w-full max-h-full object-contain"
+      />
     </div>
   );
 }

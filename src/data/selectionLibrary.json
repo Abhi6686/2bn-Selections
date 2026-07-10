@@ -2,7 +2,8 @@
   "meta": {
     "vendor": "Appliances",
     "changeOrderMinimum": 500,
-    "note": "CHANGE ORDERS WILL BEGIN AT $500."
+    "note": "CHANGE ORDERS WILL BEGIN AT $500.",
+    "masterSelectionsSource": "Master Selections List"
   },
   "levels": {
     "1": {
@@ -10,114 +11,136 @@
       "description": "Low range selections",
       "items": [
         {
-          "category": "Kitchen - Refrigeration",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE",
           "model": "GWE22JYMFS",
           "product": "Counter-Depth French-Door Refrigerator 36\" 21.9 cu ft",
           "finish": "Fingerprint Resistant Stainless",
           "priceMin": 1480,
           "priceMax": 1480,
-          "imageUrl": "/images/level1-image1.png"
+          "imageUrl": "/images/level1-image1.png",
+          "selectionSlot": "Refrigerator",
+          "categoryKey": "Kitchen - Appliances - Refrigerator"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE",
           "model": "GGS600AVFS",
           "product": "Convection Gas Range with Air Fry",
           "finish": "Stainless steel",
           "priceMin": 992,
           "priceMax": 992,
-          "imageUrl": "/images/level1-image2.png"
+          "imageUrl": "/images/level1-image2.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Microwave",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE",
           "model": "JVM3160RFSS",
           "product": "Over-the-range microwave 1.6 cu ft",
           "finish": "Stainless steel",
           "priceMin": 230,
           "priceMax": 230,
-          "imageUrl": "/images/level1-image3.png"
+          "imageUrl": "/images/level1-image3.png",
+          "selectionSlot": "JVM3160RFSS",
+          "categoryKey": "Kitchen - Appliances - Microwave"
         },
         {
-          "category": "Kitchen - Dishwasher",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE",
           "model": "GDT670SYVFS",
           "product": "Top Control Dishwasher with Sanitize",
           "finish": "Fingerprint Resistant Stainless",
           "priceMin": 612,
           "priceMax": 612,
-          "imageUrl": "/images/level1-image4.png"
+          "imageUrl": "/images/level1-image4.png",
+          "selectionSlot": "Dishwasher",
+          "categoryKey": "Kitchen - Appliances - Dishwasher"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE Profile",
           "model": "PTW605BSRWS",
           "product": "4.9 cu ft Top Load Washer",
           "finish": "White/silver",
           "priceMin": 715,
           "priceMax": 715,
-          "imageUrl": "/images/level1-image5.png"
+          "imageUrl": "/images/level1-image5.png",
+          "selectionSlot": "Washer",
+          "categoryKey": "Laundry Room - Appliances - Washer"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE Profile",
           "model": "PTD60EBSRWS",
           "product": "7.4 cu ft Electric Dryer",
           "finish": "White/silver",
           "priceMin": 740,
           "priceMax": 740,
-          "imageUrl": "/images/level1-image6.png"
+          "imageUrl": "/images/level1-image6.png",
+          "selectionSlot": "Dryer",
+          "categoryKey": "Laundry Room - Appliances - Dryer"
         },
         {
-          "category": "Plumbing - Kitchen Faucet",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Altair",
           "model": "F0216-KCF-BN",
           "product": "Oribe 1.8 GPM Pull Down Kitchen Faucet",
           "finish": "Brushed nickel",
           "priceMin": 135.15,
           "priceMax": 135.15,
-          "imageUrl": "/images/level1-image7.png"
+          "imageUrl": "/images/level1-image7.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Kitchen - Sink & Faucet - Faucet"
         },
         {
-          "category": "Plumbing - Bathroom Faucet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Elegant Lighting",
           "model": "FAV-1005PCH",
           "product": "Lena 1.5 GPM Vessel Bathroom Faucet",
           "finish": "Chrome or brushed nickel",
           "priceMin": 89,
           "priceMax": 99,
-          "imageUrl": "/images/level1-image8.png"
+          "imageUrl": "/images/level1-image8.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Faucet"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Moen",
           "model": "T2233EP",
           "product": "Eva Tub and Shower Trim Package",
           "finish": "ORB, Chrome, brushed nickel",
           "priceMin": 117,
           "priceMax": 196,
-          "imageUrl": "/images/level1-image9.png"
+          "imageUrl": "/images/level1-image9.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Delta",
           "model": "T14432-SS",
           "product": "Woodhurst Tub and Shower Trim Package",
           "finish": "Chrome or brushed nickel",
           "priceMin": 108,
           "priceMax": 160,
-          "imageUrl": "/images/level1-image10.png"
+          "imageUrl": "/images/level1-image10.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Toilet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Kohler",
           "model": "K-26077-0",
           "product": "Kingston Comfort Height Two-Piece Toilet",
           "finish": "White",
           "priceMin": 200,
           "priceMax": 200,
-          "imageUrl": "/images/level1-image11.png"
+          "imageUrl": "/images/level1-image11.png",
+          "selectionSlot": "Toilet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Toilet"
         }
       ]
     },
@@ -126,17 +149,19 @@
       "description": "Mid range selections",
       "items": [
         {
-          "category": "Kitchen - Refrigeration",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PJE23BYWFS",
           "product": "Smart Counter-Depth French-Door Refrigerator 23.2 cu ft",
           "finish": "Fingerprint Resistant Stainless",
           "priceMin": 2894,
           "priceMax": 2894,
-          "imageUrl": "/images/level2-image1.png"
+          "imageUrl": "/images/level2-image1.png",
+          "selectionSlot": "Refrigerator",
+          "categoryKey": "Kitchen - Appliances - Refrigerator"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PGP7036SLSS",
           "product": "36\" Built-In Gas Cooktop",
@@ -144,10 +169,12 @@
           "priceMin": 1402,
           "priceMax": 1402,
           "group": "cooking-package",
-          "imageUrl": "/images/level2-image2.png"
+          "imageUrl": "/images/level2-image2.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PTD7000SNSS",
           "product": "30\" Built-In Convection Double Wall Oven",
@@ -155,10 +182,12 @@
           "priceMin": 2480,
           "priceMax": 2480,
           "group": "cooking-package",
-          "imageUrl": "/images/level2-image3.png"
+          "imageUrl": "/images/level2-image3.png",
+          "selectionSlot": "Wall Oven",
+          "categoryKey": "Kitchen - Appliances - Wall Oven"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PGS930YPFS",
           "product": "30\" Smart Slide-In Gas Range (alternative)",
@@ -167,10 +196,12 @@
           "priceMax": 2084,
           "group": "range-alternative",
           "optional": true,
-          "imageUrl": "/images/level2-image4.png"
+          "imageUrl": "/images/level2-image4.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PSS93YPFS",
           "product": "30\" Smart Slide-In Electric Range (alternative)",
@@ -179,20 +210,24 @@
           "priceMax": 1724,
           "group": "range-alternative",
           "optional": true,
-          "imageUrl": "/images/level2-image5.png"
+          "imageUrl": "/images/level2-image5.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Ventilation",
+          "category": "Kitchen - Appliances",
           "manufacturer": "XO",
           "model": "XOB36SC",
           "product": "Fabriano 36\" Wall Mount Hood",
           "finish": "Stainless steel",
           "priceMin": 759,
           "priceMax": 759,
-          "imageUrl": "/images/level2-image6.png"
+          "imageUrl": "/images/level2-image6.png",
+          "selectionSlot": "Vent Hood",
+          "categoryKey": "Kitchen - Appliances - Vent Hood"
         },
         {
-          "category": "Kitchen - Microwave",
+          "category": "Kitchen - Appliances",
           "manufacturer": "LA",
           "model": "UMD241AS",
           "product": "24\" Built-In Microwave Drawer",
@@ -200,10 +235,12 @@
           "priceMin": 900,
           "priceMax": 900,
           "group": "microwave-choice",
-          "imageUrl": "/images/level2-image7.png"
+          "imageUrl": "/images/level2-image7.png",
+          "selectionSlot": "Microwave",
+          "categoryKey": "Kitchen - Appliances - Microwave"
         },
         {
-          "category": "Kitchen - Microwave",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PVM9005SJSS",
           "product": "Over-the-Range Sensor Microwave (alternative)",
@@ -212,107 +249,129 @@
           "priceMax": 450,
           "group": "microwave-choice",
           "optional": true,
-          "imageUrl": "/images/level2-image8.png"
+          "imageUrl": "/images/level2-image8.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Dishwasher",
+          "category": "Kitchen - Appliances",
           "manufacturer": "GE Profile",
           "model": "PDT715SYVFS",
           "product": "Top Control Dishwasher with Microban",
           "finish": "Anti Fingerprint Stainless",
           "priceMin": 725,
           "priceMax": 725,
-          "imageUrl": "/images/level2-image9.png"
+          "imageUrl": "/images/level2-image9.png",
+          "selectionSlot": "Dishwasher",
+          "categoryKey": "Kitchen - Appliances - Dishwasher"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE",
           "model": "GFW655SSVWW",
           "product": "5.0 cu ft Smart Front Load Washer",
           "finish": "White/silver",
           "priceMin": 865,
           "priceMax": 865,
-          "imageUrl": "/images/level2-image10.png"
+          "imageUrl": "/images/level2-image10.png",
+          "selectionSlot": "Washer",
+          "categoryKey": "Laundry Room - Appliances - Washer"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE",
           "model": "GFD65ESSVWW",
           "product": "7.8 cu ft Smart Electric Dryer",
           "finish": "White/silver",
           "priceMin": 890,
           "priceMax": 890,
-          "imageUrl": "/images/level2-image11.png"
+          "imageUrl": "/images/level2-image11.png",
+          "selectionSlot": "Dryer",
+          "categoryKey": "Laundry Room - Appliances - Dryer"
         },
         {
-          "category": "Plumbing - Kitchen Faucet",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Delta",
           "model": "9110-BL-DST",
           "product": "Westville Pull Down Kitchen Faucet",
           "finish": "Brushed nickel, chrome, matte black",
           "priceMin": 236,
           "priceMax": 282,
-          "imageUrl": "/images/level2-image12.png"
+          "imageUrl": "/images/level2-image12.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Kitchen - Sink & Faucet - Faucet"
         },
         {
-          "category": "Plumbing - Bathroom Faucet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Kohler",
           "model": "K-35953-4-BN",
           "product": "Buckley Widespread Bathroom Faucet",
           "finish": "Brushed nickel, chrome, matte black",
           "priceMin": 209,
           "priceMax": 283,
-          "imageUrl": "/images/level2-image13.png"
+          "imageUrl": "/images/level2-image13.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Faucet"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Miseno",
           "model": "MTS550425SEBN",
           "product": "Mia Tub and Shower Trim with Rain Head",
           "finish": "Brushed nickel, chrome, matte black",
           "priceMin": 193,
           "priceMax": 242,
-          "imageUrl": "/images/level2-image14.png"
+          "imageUrl": "/images/level2-image14.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Pulse",
           "model": "3006-MB-1.8GPM",
           "product": "Refuge Pressure Balanced Shower System",
           "finish": "Multiple finishes",
           "priceMin": 251,
           "priceMax": 330,
-          "imageUrl": "/images/level2-image15.png"
+          "imageUrl": "/images/level2-image15.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Signature Hardware",
           "model": "416163",
           "product": "Lattimore Pressure Balanced Shower System",
           "finish": "Multiple finishes",
           "priceMin": 440,
           "priceMax": 470,
-          "imageUrl": "/images/level2-image16.png"
+          "imageUrl": "/images/level2-image16.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Symmons",
           "model": "S339815TRM",
           "product": "Solarity Pressure Balanced Shower System",
           "finish": "Matte black, chrome, satin nickel",
           "priceMin": 300,
           "priceMax": 420,
-          "imageUrl": "/images/level2-image17.png"
+          "imageUrl": "/images/level2-image17.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Toilet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Kohler",
           "model": "K-43999-0",
           "product": "Highline Two Piece Elongated Toilet",
           "finish": "White",
           "priceMin": 330,
           "priceMax": 330,
-          "imageUrl": "/images/level2-image18.png"
+          "imageUrl": "/images/level2-image18.png",
+          "selectionSlot": "Toilet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Toilet"
         }
       ]
     },
@@ -321,37 +380,43 @@
       "description": "High range Monogram / premium selections",
       "items": [
         {
-          "category": "Kitchen - Refrigeration",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZIP364",
           "product": "36\" Premium Integrated French-Door Bottom Freezer",
           "finish": "Panel-ready / stainless",
           "priceMin": 11407,
           "priceMax": 11407,
-          "imageUrl": "/images/level3-image1.png"
+          "imageUrl": "/images/level3-image1.png",
+          "selectionSlot": "ZIP364",
+          "categoryKey": "Kitchen - Appliances - Refrigerator"
         },
         {
-          "category": "Kitchen - Microwave",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZWL1126SRSS",
           "product": "1.2 cu ft Drawer Microwave",
           "finish": "Stainless steel",
           "priceMin": 1680,
           "priceMax": 1680,
-          "imageUrl": "/images/level3-image2.png"
+          "imageUrl": "/images/level3-image2.png",
+          "selectionSlot": "Microwave",
+          "categoryKey": "Kitchen - Appliances - Microwave"
         },
         {
-          "category": "Kitchen - Microwave",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZSA1202PSS",
           "product": "Advantium 120 Speedcooking Oven",
           "finish": "Stainless steel",
           "priceMin": 1840,
           "priceMax": 1840,
-          "imageUrl": "/images/level3-image3.png"
+          "imageUrl": "/images/level3-image3.png",
+          "selectionSlot": "Microwave",
+          "categoryKey": "Kitchen - Appliances - Microwave"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZGU366NTSS",
           "product": "36\" Professional Gas Rangetop 6 Burners",
@@ -359,10 +424,12 @@
           "priceMin": 3942,
           "priceMax": 3942,
           "group": "cooking-package",
-          "imageUrl": "/images/level3-image4.png"
+          "imageUrl": "/images/level3-image4.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZTD90DPSNSS",
           "product": "30\" Built-In Double Wall Oven",
@@ -370,10 +437,12 @@
           "priceMin": 5280,
           "priceMax": 5280,
           "group": "cooking-package",
-          "imageUrl": "/images/level3-image5.png"
+          "imageUrl": "/images/level3-image5.png",
+          "selectionSlot": "Wall Oven",
+          "categoryKey": "Kitchen - Appliances - Wall Oven"
         },
         {
-          "category": "Kitchen - Cooking",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZGP304NTSS",
           "product": "30\" All-Gas Professional Range (alternative)",
@@ -382,80 +451,96 @@
           "priceMax": 4595,
           "group": "range-alternative",
           "optional": true,
-          "imageUrl": "/images/level3-image6.png"
+          "imageUrl": "/images/level3-image6.png",
+          "selectionSlot": "Range / Cooking",
+          "categoryKey": "Kitchen - Appliances - Range / Cooking"
         },
         {
-          "category": "Kitchen - Ventilation",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZVW1360SPSS",
           "product": "36\" Professional Hood with QuietBoost",
           "finish": "Stainless steel",
           "priceMin": 2320,
           "priceMax": 2320,
-          "imageUrl": "/images/level3-image7.png"
+          "imageUrl": "/images/level3-image7.png",
+          "selectionSlot": "Vent Hood",
+          "categoryKey": "Kitchen - Appliances - Vent Hood"
         },
         {
-          "category": "Kitchen - Dishwasher",
+          "category": "Kitchen - Appliances",
           "manufacturer": "Monogram",
           "model": "ZDT925SPNSS",
           "product": "24\" Fully Integrated Dishwasher",
           "finish": "Stainless steel",
           "priceMin": 1755,
           "priceMax": 1755,
-          "imageUrl": "/images/level3-image8.png"
+          "imageUrl": "/images/level3-image8.png",
+          "selectionSlot": "Dishwasher",
+          "categoryKey": "Kitchen - Appliances - Dishwasher"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE Profile",
           "model": "PFW870SSVWW",
           "product": "5.3 cu ft Smart Front Load Washer",
           "finish": "White (stackable)",
           "priceMin": 1015,
           "priceMax": 1015,
-          "imageUrl": "/images/level3-image9.png"
+          "imageUrl": "/images/level3-image9.png",
+          "selectionSlot": "Washer",
+          "categoryKey": "Laundry Room - Appliances - Washer"
         },
         {
-          "category": "Laundry",
+          "category": "Laundry Room - Appliances",
           "manufacturer": "GE Profile",
           "model": "PFD87ESSVWW",
           "product": "7.8 cu ft Smart Electric Dryer",
           "finish": "White (stackable)",
           "priceMin": 1040,
           "priceMax": 1040,
-          "imageUrl": "/images/level3-image10.png"
+          "imageUrl": "/images/level3-image10.png",
+          "selectionSlot": "Dryer",
+          "categoryKey": "Laundry Room - Appliances - Dryer"
         },
         {
-          "category": "Plumbing - Kitchen Faucet",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Signature Hardware",
           "model": "SHXCAM107BG",
           "product": "Amberley Pull Down Kitchen Faucet",
           "finish": "Multiple premium finishes",
           "priceMin": 376,
           "priceMax": 502,
-          "imageUrl": "/images/level3-image11.png"
+          "imageUrl": "/images/level3-image11.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Kitchen - Sink & Faucet - Faucet"
         },
         {
-          "category": "Plumbing - Kitchen Faucet",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Delta",
           "model": "18804Z-CZ-DST",
           "product": "Theodora Pre-Rinse Pull Down Kitchen Faucet",
           "finish": "Multiple finishes",
           "priceMin": 346,
           "priceMax": 465,
-          "imageUrl": "/images/level3-image12.png"
+          "imageUrl": "/images/level3-image12.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Kitchen - Sink & Faucet - Faucet"
         },
         {
-          "category": "Plumbing - Specialty",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Waterstone",
           "model": "5600-ABZ",
           "product": "Traditional PLP Pulldown Faucet",
           "finish": "32 finish options",
           "priceMin": 2831.25,
           "priceMax": 2831.25,
-          "optional": true
+          "optional": true,
+          "selectionSlot": "Faucet",
+          "categoryKey": "Kitchen - Sink & Faucet - Faucet"
         },
         {
-          "category": "Plumbing - Specialty",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Kohler",
           "model": "99270-BV",
           "product": "Artifacts Wall-mount Pot Filler",
@@ -463,10 +548,12 @@
           "priceMin": 862,
           "priceMax": 1380,
           "optional": true,
-          "imageUrl": "/images/level3-image14.png"
+          "imageUrl": "/images/level3-image14.png",
+          "selectionSlot": "Specialty Plumbing",
+          "categoryKey": "Kitchen - Sink & Faucet - Specialty Plumbing"
         },
         {
-          "category": "Plumbing - Specialty",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Delta",
           "model": "GR250-CZ",
           "product": "Glass Rinser",
@@ -474,10 +561,12 @@
           "priceMin": 227,
           "priceMax": 300,
           "optional": true,
-          "imageUrl": "/images/level3-image15.png"
+          "imageUrl": "/images/level3-image15.png",
+          "selectionSlot": "Specialty Plumbing",
+          "categoryKey": "Kitchen - Sink & Faucet - Specialty Plumbing"
         },
         {
-          "category": "Plumbing - Specialty",
+          "category": "Kitchen - Sink & Faucet",
           "manufacturer": "Mountain Plumbing",
           "model": "MT250/CHBRZ",
           "product": "Countertop Glass Rinser",
@@ -485,92 +574,148 @@
           "priceMin": 365,
           "priceMax": 365,
           "optional": true,
-          "imageUrl": "/images/level3-image16.png"
+          "imageUrl": "/images/level3-image16.png",
+          "selectionSlot": "Specialty Plumbing",
+          "categoryKey": "Kitchen - Sink & Faucet - Specialty Plumbing"
         },
         {
-          "category": "Plumbing - Bathroom Faucet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Kingston Brass",
           "model": "KS1252AL",
           "product": "Heritage Wall Mounted Widespread Faucet",
           "finish": "Multiple finishes",
           "priceMin": 292,
           "priceMax": 334,
-          "imageUrl": "/images/level3-image17.png"
+          "imageUrl": "/images/level3-image17.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Faucet"
         },
         {
-          "category": "Plumbing - Bathroom Faucet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Signature Hardware",
           "model": "437386",
           "product": "Enid Widespread Bathroom Faucet",
           "finish": "Multiple finishes",
           "priceMin": 289,
           "priceMax": 366,
-          "imageUrl": "/images/level3-image18.png"
+          "imageUrl": "/images/level3-image18.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Faucet"
         },
         {
-          "category": "Plumbing - Bathroom Faucet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Pfister",
           "model": "LG49-TB0SDB",
           "product": "Tisbury Widespread Bathroom Faucet",
           "finish": "Multiple finishes",
           "priceMin": 327,
           "priceMax": 467,
-          "imageUrl": "/images/level3-image19.png"
+          "imageUrl": "/images/level3-image19.png",
+          "selectionSlot": "Faucet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Faucet"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Delta",
           "model": "DSS-Trinsic-17T03-CZ",
           "product": "TempAssure 17T Thermostatic Shower System",
           "finish": "Multiple finishes",
           "priceMin": 1443,
           "priceMax": 2001,
-          "imageUrl": "/images/level3-image20.png"
+          "imageUrl": "/images/level3-image20.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Signature Hardware",
           "model": "SHK559416",
           "product": "Beasley Thermostatic Shower System",
           "finish": "Premium finishes",
           "priceMin": 2191,
           "priceMax": 2680,
-          "imageUrl": "/images/level3-image21.png"
+          "imageUrl": "/images/level3-image21.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Shower / Tub",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Signature Hardware",
           "model": "SHK497971",
           "product": "Greyfield Thermostatic Shower System",
           "finish": "Premium finishes",
           "priceMin": 2303,
           "priceMax": 2845,
-          "imageUrl": "/images/level3-image22.png"
+          "imageUrl": "/images/level3-image22.png",
+          "selectionSlot": "Shower / Tub",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Shower / Tub"
         },
         {
-          "category": "Plumbing - Toilet",
+          "category": "Bathroom - Plumbing Fixtures",
           "manufacturer": "Kohler",
           "model": "K-20450-0",
           "product": "Irvine Comfort Height Skirted Toilet",
           "finish": "White",
           "priceMin": 585,
           "priceMax": 585,
-          "imageUrl": "/images/level3-image23.png"
+          "imageUrl": "/images/level3-image23.png",
+          "selectionSlot": "Toilet",
+          "categoryKey": "Bathroom - Plumbing Fixtures - Toilet"
         }
       ]
     }
   },
   "categories": [
-    "Kitchen - Refrigeration",
-    "Kitchen - Cooking",
-    "Kitchen - Ventilation",
-    "Kitchen - Microwave",
-    "Kitchen - Dishwasher",
-    "Laundry",
-    "Plumbing - Kitchen Faucet",
-    "Plumbing - Bathroom Faucet",
-    "Plumbing - Shower / Tub",
-    "Plumbing - Toilet",
-    "Plumbing - Specialty"
+    "Exterior - Roofing",
+    "Exterior - Siding & Exterior Finishes",
+    "Exterior - Soffit / Fascia",
+    "Exterior - Windows",
+    "Exterior - Exterior Doors",
+    "Exterior - Main Entry Doors",
+    "Exterior - Storm Doors",
+    "Exterior - Sliding / Patio Doors",
+    "Exterior - Garage Doors",
+    "Exterior - Exterior Lighting",
+    "Exterior - Porch / Deck / Outdoor Living",
+    "Interior - Flooring",
+    "Interior - Hardwood",
+    "Interior - LVP / Laminate",
+    "Interior - Tile",
+    "Interior - Carpet",
+    "Interior - Interior Doors",
+    "Interior - Door Hardware",
+    "Interior - Trim & Millwork",
+    "Interior - Baseboard",
+    "Interior - Casing",
+    "Interior - Crown Molding",
+    "Interior - Specialty Trim",
+    "Interior - Paint",
+    "Kitchen - Cabinetry",
+    "Kitchen - Cabinet Hardware",
+    "Kitchen - Countertops",
+    "Kitchen - Backsplash",
+    "Kitchen - Kitchen Sink & Faucet",
+    "Kitchen - Appliances",
+    "Bathroom - Vanity",
+    "Bathroom - Plumbing Fixtures",
+    "Bathroom - Faucets",
+    "Bathroom - Shower",
+    "Bathroom - Tub",
+    "Bathroom - Toilet",
+    "Bathroom - Bathroom Accessories",
+    "Electrical - Switches & Outlets",
+    "Electrical - Lighting",
+    "Electrical - Interior Fixtures",
+    "Electrical - Smart Home",
+    "Storage - Closets",
+    "Storage - Mudroom",
+    "Laundry Room - Cabinets",
+    "Laundry Room - Countertops",
+    "Laundry Room - Sink",
+    "Laundry Room - Faucet",
+    "Laundry Room - Drying racks",
+    "Laundry Room - Appliance pedestals",
+    "Final Details - Hardware & Accessories",
+    "Project-Wide - General Preferences"
   ]
 }

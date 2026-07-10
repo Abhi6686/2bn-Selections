@@ -1,11 +1,16 @@
-import type { SelectionLevel } from "../types";
+import { SelectionLevel } from "../types";
+import { Badge } from "./ui/badge";
 
-const labels: Record<SelectionLevel, string> = {
-  "1": "Level 1",
-  "2": "Level 2",
-  "3": "Level 3",
-};
+interface LevelBadgeProps {
+  level: SelectionLevel;
+}
 
-export function LevelBadge({ level }: { level: SelectionLevel }) {
-  return <span className={`level-badge l${level}`}>{labels[level]}</span>;
+export function LevelBadge({ level }: LevelBadgeProps) {
+  if (level === "1") {
+    return <Badge variant="level1">Level 1 — Value</Badge>;
+  }
+  if (level === "2") {
+    return <Badge variant="level2">Level 2 — Mid</Badge>;
+  }
+  return <Badge variant="level3">Level 3 — Premium</Badge>;
 }

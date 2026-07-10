@@ -8,7 +8,10 @@ import type {
 import { generateId } from "./format";
 
 export function sumSelections(selections: ProjectSelection[]): number {
-  return selections.reduce((total, selection) => total + selection.priceUsed, 0);
+  return selections.reduce(
+    (total, selection) => total + (selection.priceUsed * (selection.quantity || 1)),
+    0
+  );
 }
 
 export function groupByCategory(
@@ -16,7 +19,7 @@ export function groupByCategory(
 ): Record<string, number> {
   return selections.reduce<Record<string, number>>((accumulator, selection) => {
     accumulator[selection.category] =
-      (accumulator[selection.category] ?? 0) + selection.priceUsed;
+      (accumulator[selection.category] ?? 0) + (selection.priceUsed * (selection.quantity || 1));
     return accumulator;
   }, {});
 }

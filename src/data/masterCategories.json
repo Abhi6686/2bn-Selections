@@ -1,0 +1,953 @@
+{
+  "meta": {
+    "source": "Master Selections List",
+    "version": 2,
+    "styleThemesFromDocument": [
+      "Modern",
+      "Traditional",
+      "Farmhouse",
+      "Transitional"
+    ],
+    "notes": "Admin can add themes beyond document defaults. Tag library items to themes for recommendations.",
+    "adminManagedThemes": true
+  },
+  "sections": [
+    {
+      "order": 1,
+      "name": "EXTERIOR SELECTIONS",
+      "slug": "exterior-selections",
+      "groups": [
+        {
+          "name": "Roofing",
+          "slug": "roofing",
+          "categoryKey": "Exterior - Roofing",
+          "parentGroup": null,
+          "items": [
+            "Roof shingle type",
+            "Roof shingle color",
+            "Metal roofing areas (if applicable)",
+            "Standing seam color",
+            "Ridge vent style/color",
+            "Drip edge color",
+            "Ice/water shield upgrades",
+            "Roof flashing color",
+            "Skylights",
+            "Solar tubes",
+            "Gutters",
+            "Downspouts",
+            "Gutter guards"
+          ]
+        },
+        {
+          "name": "Siding & Exterior Finishes",
+          "slug": "siding-exterior-finishes",
+          "categoryKey": "Exterior - Siding & Exterior Finishes",
+          "parentGroup": null,
+          "items": [
+            "Siding material",
+            "Vinyl",
+            "Fiber cement",
+            "Engineered wood",
+            "Metal",
+            "Board & batten",
+            "Siding color",
+            "Siding profile/style",
+            "Corner trim style/color",
+            "J-channel color",
+            "Exterior trim color",
+            "Exterior accent materials",
+            "Stone",
+            "Brick",
+            "Cedar",
+            "Metal accents",
+            "Shake/shingle accents",
+            "House wrap upgrades"
+          ]
+        },
+        {
+          "name": "Soffit / Fascia",
+          "slug": "soffit-fascia",
+          "categoryKey": "Exterior - Soffit / Fascia",
+          "parentGroup": null,
+          "items": [
+            "Soffit material",
+            "Soffit color",
+            "Fascia color",
+            "Ventilated vs solid soffit"
+          ]
+        },
+        {
+          "name": "Windows",
+          "slug": "windows",
+          "categoryKey": "Exterior - Windows",
+          "parentGroup": null,
+          "items": [
+            "Window manufacturer",
+            "Window style",
+            "Double hung",
+            "Casement",
+            "Slider",
+            "Awning",
+            "Fixed",
+            "Picture",
+            "Interior color",
+            "Exterior color",
+            "Grid pattern/style",
+            "Grid color",
+            "Glass type",
+            "Tempered glass locations",
+            "Obscure/privacy glass",
+            "Energy package",
+            "Window hardware finish",
+            "Window screens",
+            "Window trim style",
+            "Window stool/apron details"
+          ]
+        },
+        {
+          "name": "Exterior Doors",
+          "slug": "exterior-doors",
+          "categoryKey": "Exterior - Exterior Doors",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Main Entry Doors",
+              "slug": "main-entry-doors",
+              "categoryKey": "Exterior - Main Entry Doors",
+              "parentGroup": "Exterior Doors",
+              "items": [
+                "Door style",
+                "Material",
+                "Glass inserts",
+                "Paint/stain color",
+                "Hardware finish",
+                "Hinge finish",
+                "Smart lock selection",
+                "Deadbolt style",
+                "Handle set style"
+              ]
+            },
+            {
+              "name": "Storm Doors",
+              "slug": "storm-doors",
+              "categoryKey": "Exterior - Storm Doors",
+              "parentGroup": "Exterior Doors",
+              "items": [
+                "Full view vs half view",
+                "Screen options",
+                "Color",
+                "Hardware finish"
+              ]
+            },
+            {
+              "name": "Sliding / Patio Doors",
+              "slug": "sliding-patio-doors",
+              "categoryKey": "Exterior - Sliding / Patio Doors",
+              "parentGroup": "Exterior Doors",
+              "items": [
+                "Manufacturer",
+                "Style",
+                "Interior/exterior color",
+                "Hardware finish",
+                "Grid style",
+                "Blinds between glass"
+              ]
+            },
+            {
+              "name": "Garage Doors",
+              "slug": "garage-doors",
+              "categoryKey": "Exterior - Garage Doors",
+              "parentGroup": "Exterior Doors",
+              "items": [
+                "Door style",
+                "Insulation package",
+                "Window layout",
+                "Color",
+                "Decorative hardware",
+                "Opener selection",
+                "Keypad",
+                "Smart opener features"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Exterior Lighting",
+          "slug": "exterior-lighting",
+          "categoryKey": "Exterior - Exterior Lighting",
+          "parentGroup": null,
+          "items": [
+            "Front entry lights",
+            "Garage lights",
+            "Porch lights",
+            "Flood lights",
+            "Motion sensors",
+            "Security lighting",
+            "Landscape lighting",
+            "Post lights",
+            "Under-soffit lighting",
+            "Color temperature preference"
+          ]
+        },
+        {
+          "name": "Porch / Deck / Outdoor Living",
+          "slug": "porch-deck-outdoor-living",
+          "categoryKey": "Exterior - Porch / Deck / Outdoor Living",
+          "parentGroup": null,
+          "items": [
+            "Decking material",
+            "Deck board color",
+            "Deck pattern/layout",
+            "Railing style",
+            "Railing color",
+            "Baluster type",
+            "Cable railing",
+            "Stair lighting",
+            "Under-deck ceiling systems",
+            "Porch ceiling finish",
+            "Outdoor ceiling fans",
+            "Outdoor speakers",
+            "Outdoor TV locations",
+            "Exterior outlets",
+            "Hose bib locations",
+            "Gas line for grill/fireplace",
+            "Outdoor kitchen selections"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "name": "INTERIOR FINISHES",
+      "slug": "interior-finishes",
+      "groups": [
+        {
+          "name": "Flooring",
+          "slug": "flooring",
+          "categoryKey": "Interior - Flooring",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Hardwood",
+              "slug": "hardwood",
+              "categoryKey": "Interior - Hardwood",
+              "parentGroup": "Flooring",
+              "items": [
+                "Species",
+                "Width",
+                "Finish",
+                "Stain color",
+                "Sheen level"
+              ]
+            },
+            {
+              "name": "LVP / Laminate",
+              "slug": "lvp-laminate",
+              "categoryKey": "Interior - LVP / Laminate",
+              "parentGroup": "Flooring",
+              "items": [
+                "Manufacturer",
+                "Color",
+                "Thickness",
+                "Wear layer"
+              ]
+            },
+            {
+              "name": "Tile",
+              "slug": "tile",
+              "categoryKey": "Interior - Tile",
+              "parentGroup": "Flooring",
+              "items": [
+                "Floor tile",
+                "Shower wall tile",
+                "Shower floor tile",
+                "Accent tile",
+                "Grout color",
+                "Grout type",
+                "Tile pattern/layout",
+                "Schluter trim color",
+                "Heated flooring"
+              ]
+            },
+            {
+              "name": "Carpet",
+              "slug": "carpet",
+              "categoryKey": "Interior - Carpet",
+              "parentGroup": "Flooring",
+              "items": [
+                "Carpet style",
+                "Carpet color",
+                "Carpet pad"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Interior Doors",
+          "slug": "interior-doors",
+          "categoryKey": "Interior - Interior Doors",
+          "parentGroup": null,
+          "items": [
+            "Door style",
+            "Hollow vs solid core",
+            "Door height",
+            "Door color/finish",
+            "Barn doors",
+            "French doors",
+            "Pocket doors",
+            "Closet door style",
+            "Bi-fold vs bypass"
+          ]
+        },
+        {
+          "name": "Door Hardware",
+          "slug": "door-hardware",
+          "categoryKey": "Interior - Door Hardware",
+          "parentGroup": null,
+          "items": [
+            "Lever vs knob",
+            "Finish",
+            "Privacy locks",
+            "Passage hardware",
+            "Dummy handles",
+            "Smart locks",
+            "Hinges",
+            "Magnetic stops",
+            "Door stops"
+          ]
+        },
+        {
+          "name": "Trim & Millwork",
+          "slug": "trim-millwork",
+          "categoryKey": "Interior - Trim & Millwork",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Baseboard",
+              "slug": "baseboard",
+              "categoryKey": "Interior - Baseboard",
+              "parentGroup": "Trim & Millwork",
+              "items": [
+                "Profile",
+                "Height",
+                "Paint/stain"
+              ]
+            },
+            {
+              "name": "Casing",
+              "slug": "casing",
+              "categoryKey": "Interior - Casing",
+              "parentGroup": "Trim & Millwork",
+              "items": [
+                "Profile",
+                "Width",
+                "Paint/stain"
+              ]
+            },
+            {
+              "name": "Crown Molding",
+              "slug": "crown-molding",
+              "categoryKey": "Interior - Crown Molding",
+              "parentGroup": "Trim & Millwork",
+              "items": [
+                "Style",
+                "Size",
+                "Locations"
+              ]
+            },
+            {
+              "name": "Specialty Trim",
+              "slug": "specialty-trim",
+              "categoryKey": "Interior - Specialty Trim",
+              "parentGroup": "Trim & Millwork",
+              "items": [
+                "Wainscoting",
+                "Accent walls",
+                "Beams",
+                "Shiplap",
+                "Board & batten",
+                "Coffered ceilings"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Paint",
+          "slug": "paint",
+          "categoryKey": "Interior - Paint",
+          "parentGroup": null,
+          "items": [
+            "Wall colors",
+            "Ceiling colors",
+            "Trim color",
+            "Sheen selections",
+            "Accent walls",
+            "Cabinet paint/stain",
+            "Exterior paint/stain"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "name": "KITCHEN SELECTIONS",
+      "slug": "kitchen-selections",
+      "groups": [
+        {
+          "name": "Cabinetry",
+          "slug": "cabinetry",
+          "categoryKey": "Kitchen - Cabinetry",
+          "parentGroup": null,
+          "items": [
+            "Cabinet manufacturer",
+            "Door style",
+            "Wood species",
+            "Paint/stain color",
+            "Overlay style",
+            "Interior cabinet finish",
+            "Soft-close hardware",
+            "Pull-out accessories",
+            "Trash pull-outs",
+            "Pantry systems",
+            "Crown molding",
+            "Light rail molding",
+            "Glass doors",
+            "Open shelving"
+          ]
+        },
+        {
+          "name": "Cabinet Hardware",
+          "slug": "cabinet-hardware",
+          "categoryKey": "Kitchen - Cabinet Hardware",
+          "parentGroup": null,
+          "items": [
+            "Knobs",
+            "Pulls",
+            "Finish",
+            "Appliance pulls"
+          ]
+        },
+        {
+          "name": "Countertops",
+          "slug": "countertops",
+          "categoryKey": "Kitchen - Countertops",
+          "parentGroup": null,
+          "items": [
+            "Material",
+            "Edge profile",
+            "Thickness",
+            "Finish",
+            "Sink cutouts",
+            "Waterfall edges",
+            "Full-height backsplash"
+          ]
+        },
+        {
+          "name": "Backsplash",
+          "slug": "backsplash",
+          "categoryKey": "Kitchen - Backsplash",
+          "parentGroup": null,
+          "items": [
+            "Tile selection",
+            "Layout",
+            "Grout color",
+            "Accent tile"
+          ]
+        },
+        {
+          "name": "Kitchen Sink & Faucet",
+          "slug": "kitchen-sink-faucet",
+          "categoryKey": "Kitchen - Kitchen Sink & Faucet",
+          "parentGroup": null,
+          "items": [
+            "Sink style",
+            "Sink material",
+            "Faucet finish",
+            "Faucet style",
+            "Pot filler",
+            "Garbage disposal"
+          ]
+        },
+        {
+          "name": "Appliances",
+          "slug": "appliances",
+          "categoryKey": "Kitchen - Appliances",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Refrigerator",
+              "slug": "refrigerator",
+              "categoryKey": "Kitchen - Appliances - Refrigerator",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Range / Cooking",
+              "slug": "range-cooking",
+              "categoryKey": "Kitchen - Appliances - Range / Cooking",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Wall Oven",
+              "slug": "wall-oven",
+              "categoryKey": "Kitchen - Appliances - Wall Oven",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Microwave",
+              "slug": "microwave",
+              "categoryKey": "Kitchen - Appliances - Microwave",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Dishwasher",
+              "slug": "dishwasher",
+              "categoryKey": "Kitchen - Appliances - Dishwasher",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Beverage Center",
+              "slug": "beverage-center",
+              "categoryKey": "Kitchen - Appliances - Beverage Center",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Ice Maker",
+              "slug": "ice-maker",
+              "categoryKey": "Kitchen - Appliances - Ice Maker",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Vent Hood",
+              "slug": "vent-hood",
+              "categoryKey": "Kitchen - Appliances - Vent Hood",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Panel-Ready",
+              "slug": "panel-ready",
+              "categoryKey": "Kitchen - Appliances - Panel-ready appliances",
+              "parentGroup": "Appliances",
+              "items": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "name": "BATHROOM SELECTIONS",
+      "slug": "bathroom-selections",
+      "groups": [
+        {
+          "name": "Vanity",
+          "slug": "vanity",
+          "categoryKey": "Bathroom - Vanity",
+          "parentGroup": null,
+          "items": [
+            "Cabinet style",
+            "Color",
+            "Countertop",
+            "Sink style",
+            "Hardware"
+          ]
+        },
+        {
+          "name": "Plumbing Fixtures",
+          "slug": "plumbing-fixtures",
+          "categoryKey": "Bathroom - Plumbing Fixtures",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Faucets",
+              "slug": "faucets",
+              "categoryKey": "Bathroom - Faucets",
+              "parentGroup": "Plumbing Fixtures",
+              "items": [
+                "Finish",
+                "Style"
+              ]
+            },
+            {
+              "name": "Shower",
+              "slug": "shower",
+              "categoryKey": "Bathroom - Shower",
+              "parentGroup": "Plumbing Fixtures",
+              "items": [
+                "Valve trim",
+                "Shower head",
+                "Handheld",
+                "Body sprays",
+                "Rain head",
+                "Glass enclosure",
+                "Shower niche finish"
+              ]
+            },
+            {
+              "name": "Tub",
+              "slug": "tub",
+              "categoryKey": "Bathroom - Tub",
+              "parentGroup": "Plumbing Fixtures",
+              "items": [
+                "Freestanding",
+                "Alcove",
+                "Soaking tub",
+                "Whirlpool"
+              ]
+            },
+            {
+              "name": "Toilet",
+              "slug": "toilet",
+              "categoryKey": "Bathroom - Toilet",
+              "parentGroup": "Plumbing Fixtures",
+              "items": [
+                "Comfort height",
+                "Skirted",
+                "Bidet features"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Bathroom Accessories",
+          "slug": "bathroom-accessories",
+          "categoryKey": "Bathroom - Bathroom Accessories",
+          "parentGroup": null,
+          "items": [
+            "Towel bars",
+            "Hooks",
+            "Toilet paper holders",
+            "Mirrors",
+            "Medicine cabinets"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "name": "ELECTRICAL & TECHNOLOGY",
+      "slug": "electrical-and-technology",
+      "groups": [
+        {
+          "name": "Switches & Outlets",
+          "slug": "switches-outlets",
+          "categoryKey": "Electrical - Switches & Outlets",
+          "parentGroup": null,
+          "items": [
+            "White/black/etc.",
+            "Decorative plates",
+            "USB outlets",
+            "GFCI locations"
+          ]
+        },
+        {
+          "name": "Lighting",
+          "slug": "lighting",
+          "categoryKey": "Electrical - Lighting",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Interior Fixtures",
+              "slug": "interior-fixtures",
+              "categoryKey": "Electrical - Interior Fixtures",
+              "parentGroup": "Lighting",
+              "items": [
+                "Chandeliers",
+                "Pendants",
+                "Vanity lights",
+                "Ceiling fans",
+                "Recessed lighting",
+                "Under cabinet lighting",
+                "Closet lighting",
+                "Stair lighting"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Smart Home",
+          "slug": "smart-home",
+          "categoryKey": "Electrical - Smart Home",
+          "parentGroup": null,
+          "items": [
+            "Smart switches",
+            "Smart thermostat",
+            "Smart doorbell",
+            "Security cameras",
+            "Alarm systems",
+            "WiFi access points",
+            "Whole-home audio"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "name": "HVAC & COMFORT",
+      "slug": "hvac-and-comfort",
+      "groups": []
+    },
+    {
+      "order": 7,
+      "name": "FIREPLACE SELECTIONS",
+      "slug": "fireplace-selections",
+      "groups": []
+    },
+    {
+      "order": 8,
+      "name": "STORAGE & ORGANIZATION",
+      "slug": "storage-and-organization",
+      "groups": [
+        {
+          "name": "Closets",
+          "slug": "closets",
+          "categoryKey": "Storage - Closets",
+          "parentGroup": null,
+          "items": [
+            "Wire shelving",
+            "Wood systems",
+            "Drawer towers",
+            "Shoe storage",
+            "Closet rods"
+          ]
+        },
+        {
+          "name": "Mudroom",
+          "slug": "mudroom",
+          "categoryKey": "Storage - Mudroom",
+          "parentGroup": null,
+          "items": [
+            "Lockers",
+            "Bench",
+            "Hooks",
+            "Cubbies",
+            "Charging stations"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "name": "LAUNDRY ROOM",
+      "slug": "laundry-room",
+      "groups": [
+        {
+          "name": "Cabinets",
+          "slug": "cabinets",
+          "categoryKey": "Laundry Room - Cabinets",
+          "parentGroup": null,
+          "items": []
+        },
+        {
+          "name": "Countertops",
+          "slug": "countertops",
+          "categoryKey": "Laundry Room - Countertops",
+          "parentGroup": null,
+          "items": []
+        },
+        {
+          "name": "Sink",
+          "slug": "sink",
+          "categoryKey": "Laundry Room - Sink",
+          "parentGroup": null,
+          "items": []
+        },
+        {
+          "name": "Faucet",
+          "slug": "faucet",
+          "categoryKey": "Laundry Room - Faucet",
+          "parentGroup": null,
+          "items": []
+        },
+        {
+          "name": "Drying racks",
+          "slug": "drying-racks",
+          "categoryKey": "Laundry Room - Drying racks",
+          "parentGroup": null,
+          "items": []
+        },
+        {
+          "name": "Appliance pedestals",
+          "slug": "appliance-pedestals",
+          "categoryKey": "Laundry Room - Appliance pedestals",
+          "parentGroup": null,
+          "items": [
+            "1"
+          ]
+        },
+        {
+          "name": "Appliances",
+          "slug": "appliances",
+          "categoryKey": "Laundry Room - Appliances",
+          "parentGroup": null,
+          "items": [],
+          "subgroups": [
+            {
+              "name": "Washer",
+              "slug": "washer",
+              "categoryKey": "Laundry Room - Appliances - Washer",
+              "parentGroup": "Appliances",
+              "items": []
+            },
+            {
+              "name": "Dryer",
+              "slug": "dryer",
+              "categoryKey": "Laundry Room - Appliances - Dryer",
+              "parentGroup": "Appliances",
+              "items": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "name": "SPECIALTY ITEMS",
+      "slug": "specialty-items",
+      "groups": []
+    },
+    {
+      "order": 11,
+      "name": "FINAL DETAIL ITEMS",
+      "slug": "final-detail-items",
+      "groups": [
+        {
+          "name": "Hardware & Accessories",
+          "slug": "hardware-accessories",
+          "categoryKey": "Final Details - Hardware & Accessories",
+          "parentGroup": null,
+          "items": [
+            "House numbers",
+            "Mailbox",
+            "Doorbell",
+            "Cabinet accessories",
+            "Window treatments",
+            "Shelving brackets",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "name": "PROJECT-WIDE DETAILS",
+      "slug": "project-wide-details",
+      "groups": [
+        {
+          "name": "General Preferences",
+          "slug": "general-preferences",
+          "categoryKey": "Project-Wide - General Preferences",
+          "parentGroup": null,
+          "items": [
+            "Modern / traditional / farmhouse / transitional style",
+            "Paint-grade vs stain-grade",
+            "Matte vs satin finishes",
+            "Black vs chrome vs brass finishes",
+            "Matching hardware throughout?",
+            "Child/pet durability concerns",
+            "Low-maintenance preferences",
+            "Budget priorities",
+            "Upgrade priorities",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "name": "INFORMATION NEEDED FOR ORDERING",
+      "slug": "information-needed-for-ordering",
+      "groups": []
+    }
+  ],
+  "flatCategories": [
+    "Exterior - Roofing",
+    "Exterior - Siding & Exterior Finishes",
+    "Exterior - Soffit / Fascia",
+    "Exterior - Windows",
+    "Exterior - Exterior Doors",
+    "Exterior - Main Entry Doors",
+    "Exterior - Storm Doors",
+    "Exterior - Sliding / Patio Doors",
+    "Exterior - Garage Doors",
+    "Exterior - Exterior Lighting",
+    "Exterior - Porch / Deck / Outdoor Living",
+    "Interior - Flooring",
+    "Interior - Hardwood",
+    "Interior - LVP / Laminate",
+    "Interior - Tile",
+    "Interior - Carpet",
+    "Interior - Interior Doors",
+    "Interior - Door Hardware",
+    "Interior - Trim & Millwork",
+    "Interior - Baseboard",
+    "Interior - Casing",
+    "Interior - Crown Molding",
+    "Interior - Specialty Trim",
+    "Interior - Paint",
+    "Kitchen - Cabinetry",
+    "Kitchen - Cabinet Hardware",
+    "Kitchen - Countertops",
+    "Kitchen - Backsplash",
+    "Kitchen - Kitchen Sink & Faucet",
+    "Kitchen - Appliances",
+    "Kitchen - Appliances - Refrigerator",
+    "Kitchen - Appliances - Range / Cooking",
+    "Kitchen - Appliances - Wall Oven",
+    "Kitchen - Appliances - Microwave",
+    "Kitchen - Appliances - Dishwasher",
+    "Kitchen - Appliances - Beverage Center",
+    "Kitchen - Appliances - Ice Maker",
+    "Kitchen - Appliances - Vent Hood",
+    "Kitchen - Appliances - Panel-ready appliances",
+    "Laundry Room - Appliances - Washer",
+    "Laundry Room - Appliances - Dryer",
+    "Bathroom - Vanity",
+    "Bathroom - Plumbing Fixtures",
+    "Bathroom - Faucets",
+    "Bathroom - Shower",
+    "Bathroom - Tub",
+    "Bathroom - Toilet",
+    "Bathroom - Bathroom Accessories",
+    "Electrical - Switches & Outlets",
+    "Electrical - Lighting",
+    "Electrical - Interior Fixtures",
+    "Electrical - Smart Home",
+    "Storage - Closets",
+    "Storage - Mudroom",
+    "Laundry Room - Cabinets",
+    "Laundry Room - Countertops",
+    "Laundry Room - Sink",
+    "Laundry Room - Faucet",
+    "Laundry Room - Drying racks",
+    "Laundry Room - Appliance pedestals",
+    "Final Details - Hardware & Accessories",
+    "Project-Wide - General Preferences"
+  ],
+  "applianceCategoryRemap": {
+    "Kitchen - Refrigeration": "Kitchen - Appliances",
+    "Kitchen - Cooking": "Kitchen - Appliances",
+    "Kitchen - Ventilation": "Kitchen - Appliances",
+    "Kitchen - Microwave": "Kitchen - Appliances",
+    "Kitchen - Dishwasher": "Kitchen - Appliances",
+    "Laundry": "Laundry Room - Appliances",
+    "Plumbing - Kitchen Faucet": "Kitchen - Sink & Faucet",
+    "Plumbing - Bathroom Faucet": "Bathroom - Plumbing Fixtures",
+    "Plumbing - Shower / Tub": "Bathroom - Plumbing Fixtures",
+    "Plumbing - Toilet": "Bathroom - Plumbing Fixtures",
+    "Plumbing - Specialty": "Kitchen - Sink & Faucet"
+  }
+}

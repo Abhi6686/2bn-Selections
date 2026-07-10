@@ -17,6 +17,7 @@ import type {
   LibraryItem,
   Project,
   ProjectSelection,
+  SelectionLevel,
 } from "../types";
 import {
   appendTimelineEvent,
@@ -40,13 +41,47 @@ interface AppContextValue {
     clientName: string;
     address: string;
     selections: ProjectSelection[];
+    rooms?: any[];
   }) => Project;
   updateProjectSelection: (
     projectId: string,
-    category: string,
-    libraryItem: LibraryItem,
-    priceUsed: number,
+    categoryKey: string,
+    updates: {
+      id?: string;
+      state?: "draft" | "confirmed" | "skipped";
+      libraryItemId?: string;
+      priceUsed?: number;
+      quantity?: number;
+      slotLabel?: string;
+      manufacturer?: string;
+      model?: string;
+      product?: string;
+      level?: SelectionLevel;
+      imageUrl?: string;
+      finish?: string;
+      discountPercent?: number;
+      discountFlat?: number;
+    },
   ) => void;
+  deleteProjectSelection: (projectId: string, selectionId: string) => void;
+  submitProjectProposal: (
+    projectId: string,
+    signatureData: {
+      signatureType: "typed" | "drawn";
+      typedName?: string;
+      signatureImageBase64?: string;
+    },
+  ) => void;
+  submitProjectSelections: (projectId: string) => void;
+  unlockProjectCategories: (projectId: string, categoryKeys: string[]) => void;
+  toggleProjectSelectionsLock: (projectId: string, locked: boolean) => void;
+  toggleDecideLater: (
+    projectId: string,
+    categoryKey: string,
+    slotLabel: string,
+    decideLater: boolean,
+  ) => void;
+  updateProjectLastVisited: (projectId: string, lastVisitedCategoryKey: string) => void;
   createChangeOrder: (
     projectId: string,
     title: string,
@@ -125,6 +160,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       clientName: string;
       address: string;
       selections: ProjectSelection[];
+      rooms?: any[];
     }): Project => {
       const now = new Date().toISOString();
       const initialBudget = sumSelections(input.selections);
@@ -144,6 +180,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         timeline: [],
         createdAt: now,
         updatedAt: now,
+        rooms: input.rooms,
       };
 
       const initialSnapshot = createBudgetSnapshot(
@@ -184,9 +221,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateProjectSelection = useCallback(
     (
       projectId: string,
-      category: string,
-      libraryItem: LibraryItem,
-      priceUsed: number,
+      categoryKey: string,
+      updates: {
+        id?: string;
+        state?: "draft" | "confirmed" | "skipped";
+        libraryItemId?: string;
+        priceUsed?: number;
+        quantity?: number;
+        slotLabel?: string;
+        manufacturer?: string;
+        model?: string;
+        product?: string;
+        level?: SelectionLevel;
+        imageUrl?: string;
+        finish?: string;
+        discountPercent?: number;
+        discountFlat?: number;
+      },
     ) => {
       setState((previous) => {
         const projectIndex = previous.projects.findIndex(
@@ -197,44 +248,146 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
 
         const project = { ...previous.projects[projectIndex] };
-        const previousSelection = project.selections.find(
-          (selection) => selection.category === category,
-        );
-        const previousAmount = previousSelection?.priceUsed ?? 0;
+        const selections = [...project.selections];
+        
+        let selectionIndex = -1;
+        if (updates.id) {
+          selectionIndex = selections.findIndex((s) => s.id === updates.id);
+        } else {
+          // If no ID is provided, look for one in categoryKey with matching slotLabel (or empty)
+          const targetSlotLabel = updates.slotLabel || "";
+          selectionIndex = selections.findIndex(
+            (s) => s.category === categoryKey && (s.slotLabel || "") === targetSlotLabel && s.state !== "skipped"
+          );
+        }
 
-        const newSelection: ProjectSelection = {
-          category,
-          libraryItemId: libraryItem.id,
-          manufacturer: libraryItem.manufacturer,
-          model: libraryItem.model,
-          product: libraryItem.product,
-          priceUsed,
-          level: libraryItem.level,
-          imageUrl: libraryItem.imageUrl,
-          finish: libraryItem.finish,
-        };
+        const previousSelection = selectionIndex >= 0 ? selections[selectionIndex] : null;
+        const previousAmount = previousSelection
+          ? (previousSelection.priceUsed * (previousSelection.quantity || 1))
+          : 0;
 
-        const otherSelections = project.selections.filter(
-          (selection) => selection.category !== category,
-        );
-        project.selections = [...otherSelections, newSelection];
+        let finalSelections = selections;
+
+        if (updates.state === "skipped") {
+          // Skip category: remove all selections in this category and add one skipped selection
+          const otherSelections = selections.filter((s) => s.category !== categoryKey);
+          const skippedEntry: ProjectSelection = {
+            id: updates.id || `sel-${generateId()}`,
+            category: categoryKey,
+            libraryItemId: "",
+            manufacturer: "",
+            model: "",
+            product: "",
+            priceUsed: 0,
+            level: "1",
+            quantity: 0,
+            slotLabel: "",
+            state: "skipped",
+          };
+          finalSelections = [...otherSelections, skippedEntry];
+        } else {
+          // Confirming or updating selection
+          // First, remove any skipped entry for this category
+          const filteredSelections = selections.filter(
+            (s) => !(s.category === categoryKey && s.state === "skipped")
+          );
+
+          let libraryData = {};
+          if (updates.libraryItemId) {
+            const libraryItem = previous.libraryItems.find(
+              (item) => item.id === updates.libraryItemId
+            );
+            if (libraryItem) {
+              libraryData = {
+                libraryItemId: libraryItem.id,
+                manufacturer: libraryItem.manufacturer,
+                model: libraryItem.model,
+                product: libraryItem.product,
+                level: libraryItem.level,
+                finish: libraryItem.finish || "",
+                imageUrl: libraryItem.imageUrl,
+                priceUsed: updates.priceUsed ?? libraryItem.priceMin,
+              };
+            }
+          }
+
+          if (previousSelection && previousSelection.state !== "skipped") {
+            // Update existing
+            const updatedSelection: ProjectSelection = {
+              ...previousSelection,
+              ...libraryData,
+              ...(updates.state !== undefined ? { state: updates.state } : {}),
+              ...(updates.priceUsed !== undefined ? { priceUsed: updates.priceUsed } : {}),
+              ...(updates.manufacturer !== undefined ? { manufacturer: updates.manufacturer } : {}),
+              ...(updates.model !== undefined ? { model: updates.model } : {}),
+              ...(updates.product !== undefined ? { product: updates.product } : {}),
+              ...(updates.level !== undefined ? { level: updates.level } : {}),
+              ...(updates.finish !== undefined ? { finish: updates.finish } : {}),
+              ...(updates.imageUrl !== undefined ? { imageUrl: updates.imageUrl } : {}),
+              ...(updates.quantity !== undefined ? { quantity: updates.quantity } : {}),
+              ...(updates.slotLabel !== undefined ? { slotLabel: updates.slotLabel } : {}),
+              ...(updates.discountPercent !== undefined ? { discountPercent: updates.discountPercent } : {}),
+              ...(updates.discountFlat !== undefined ? { discountFlat: updates.discountFlat } : {}),
+            };
+            const idx = filteredSelections.findIndex((s) => s.id === previousSelection.id);
+            if (idx >= 0) {
+              filteredSelections[idx] = updatedSelection;
+            } else {
+              filteredSelections.push(updatedSelection);
+            }
+          } else {
+            // Create new selection entry
+            const newSelection: ProjectSelection = {
+              id: updates.id || `sel-${generateId()}`,
+              category: categoryKey,
+              libraryItemId: updates.libraryItemId || "",
+              manufacturer: updates.manufacturer || "",
+              model: updates.model || "",
+              product: updates.product || "",
+              priceUsed: updates.priceUsed || 0,
+              level: updates.level || "1",
+              finish: updates.finish || "",
+              imageUrl: updates.imageUrl,
+              quantity: updates.quantity ?? 1,
+              slotLabel: updates.slotLabel || "",
+              state: updates.state || "confirmed",
+              discountPercent: updates.discountPercent || 0,
+              discountFlat: updates.discountFlat || 0,
+              ...libraryData,
+            };
+            filteredSelections.push(newSelection);
+          }
+          finalSelections = filteredSelections;
+        }
+
+        project.selections = finalSelections;
         const newBudget = sumSelections(project.selections);
         const budgetDelta = newBudget - project.currentBudget;
 
         if (budgetDelta !== 0) {
           project.currentBudget = newBudget;
           project.budgetSnapshots = [
-            createBudgetSnapshot(project, "Selection change", "manual"),
+            createBudgetSnapshot(project, `Selection change: ${categoryKey}`, "manual"),
             ...project.budgetSnapshots,
           ];
 
+          // Calculate new amount for timeline event
+          const newSelectionEntry = project.selections.find(
+            (s) => s.category === categoryKey && s.state !== "skipped"
+          );
+          const newAmount = newSelectionEntry
+            ? (newSelectionEntry.priceUsed * (newSelectionEntry.quantity || 1))
+            : 0;
+
           appendTimelineEvent(project, {
             type: "selection_updated",
-            title: `${category} updated`,
-            description: `${libraryItem.manufacturer} ${libraryItem.model}`,
+            title: `${categoryKey} updated`,
+            description: newSelectionEntry
+              ? `${newSelectionEntry.manufacturer} ${newSelectionEntry.model}`
+              : `${categoryKey} updated`,
             amountBefore: previousAmount,
-            amountAfter: priceUsed,
-            category,
+            amountAfter: newAmount,
+            category: categoryKey,
           });
 
           if (Math.abs(budgetDelta) >= changeOrderMinimum) {
@@ -247,6 +400,49 @@ export function AppProvider({ children }: { children: ReactNode }) {
             });
           }
         }
+
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const deleteProjectSelection = useCallback(
+    (projectId: string, selectionId: string) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex(
+          (project) => project.id === projectId,
+        );
+        if (projectIndex < 0) {
+          return previous;
+        }
+
+        const project = { ...previous.projects[projectIndex] };
+        const selectionToDelete = project.selections.find((s) => s.id === selectionId);
+        if (!selectionToDelete) {
+          return previous;
+        }
+
+        const categoryKey = selectionToDelete.category;
+        project.selections = project.selections.filter((s) => s.id !== selectionId);
+        
+        const newBudget = sumSelections(project.selections);
+        project.currentBudget = newBudget;
+        project.budgetSnapshots = [
+          createBudgetSnapshot(project, `Removed selection slot from ${categoryKey}`, "manual"),
+          ...project.budgetSnapshots,
+        ];
+
+        appendTimelineEvent(project, {
+          type: "selection_updated",
+          title: `${categoryKey} slot removed`,
+          description: `Removed a selection slot from ${categoryKey}`,
+          category: categoryKey,
+        });
 
         project.updatedAt = new Date().toISOString();
 
@@ -388,6 +584,174 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const submitProjectProposal = useCallback(
+    (
+      projectId: string,
+      signatureData: {
+        signatureType: "typed" | "drawn";
+        typedName?: string;
+        signatureImageBase64?: string;
+      },
+    ) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex] };
+        project.proposalSigned = true;
+        project.proposalPdfUrl = `/uploads/pdfs/proposal-${projectId}-1.pdf`;
+        project.unlockedCategoryKeys = [];
+
+        appendTimelineEvent(project, {
+          type: "notification",
+          title: "Proposal Finalized & Signed",
+          description: `Selections proposal signed by client via ${
+            signatureData.signatureType === "typed"
+              ? `typed name "${signatureData.typedName}"`
+              : "drawn signature"
+          }.`,
+        });
+
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const submitProjectSelections = useCallback(
+    (projectId: string) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex] };
+        project.status = "selections_submitted";
+
+        appendTimelineEvent(project, {
+          type: "selections_submitted",
+          title: "Selections Sheet Completed & Submitted",
+          description: "Selections submitted by homeowner. Awaiting contract signature.",
+        });
+
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const unlockProjectCategories = useCallback(
+    (projectId: string, categoryKeys: string[]) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex] };
+        project.unlockedCategoryKeys = categoryKeys;
+
+        appendTimelineEvent(project, {
+          type: "notification",
+          title: "Category access updated",
+          description: `Category locks adjusted. Unlocked: ${categoryKeys
+            .map((k) => k.split(" - ").pop())
+            .join(", ") || "none"}.`,
+        });
+
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const toggleProjectSelectionsLock = useCallback(
+    (projectId: string, locked: boolean) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex] };
+        project.projectLocked = locked;
+
+        appendTimelineEvent(project, {
+          type: "notification",
+          title: locked ? "Project Selections Locked" : "Project Selections Unlocked",
+          description: locked
+            ? "The project selections sheet was locked by the Project Manager."
+            : "The project selections sheet was unlocked by the Project Manager.",
+        });
+
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const toggleDecideLater = useCallback(
+    (
+      projectId: string,
+      categoryKey: string,
+      slotLabel: string,
+      decideLater: boolean,
+    ) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex] };
+        const slotKey = `${categoryKey}::${slotLabel}`;
+        let list = project.decideLaterSlots || [];
+
+        if (decideLater) {
+          if (!list.includes(slotKey)) {
+            list = [...list, slotKey];
+          }
+        } else {
+          list = list.filter((item) => item !== slotKey);
+        }
+
+        project.decideLaterSlots = list;
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
+  const updateProjectLastVisited = useCallback(
+    (projectId: string, lastVisitedCategoryKey: string) => {
+      setState((previous) => {
+        const projectIndex = previous.projects.findIndex((p) => p.id === projectId);
+        if (projectIndex < 0) return previous;
+
+        const project = { ...previous.projects[projectIndex], lastVisitedCategoryKey };
+        project.updatedAt = new Date().toISOString();
+
+        const projects = [...previous.projects];
+        projects[projectIndex] = project;
+        return { ...previous, projects };
+      });
+    },
+    [],
+  );
+
   const resetDemoData = useCallback(() => {
     const fresh = loadAppState();
     fresh.projects = [];
@@ -405,6 +769,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     addCategory,
     createProject,
     updateProjectSelection,
+    deleteProjectSelection,
+    submitProjectProposal,
+    submitProjectSelections,
+    unlockProjectCategories,
+    toggleProjectSelectionsLock,
+    toggleDecideLater,
+    updateProjectLastVisited,
     createChangeOrder,
     updateChangeOrderStatus,
     resetDemoData,

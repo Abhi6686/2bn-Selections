@@ -1,10 +1,10 @@
 import type { Project, ProjectSelection, SelectionLevel } from "../types";
 
 export function getProjectLevelSummary(project: Project): string {
-  const levelsUsed = new Set(project.selections.map((selection) => selection.level));
-  if (levelsUsed.size === 0) {
+  if (!project.selections?.length) {
     return "No selections";
   }
+  const levelsUsed = new Set(project.selections.map((selection) => selection.level));
   if (levelsUsed.size === 1) {
     return `Level ${project.selections[0].level}`;
   }
