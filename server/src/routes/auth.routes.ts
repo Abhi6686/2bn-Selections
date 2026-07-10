@@ -19,10 +19,13 @@ function setAuthCookies(
   accessToken: string,
   refreshToken: string,
 ): void {
+  const isProduction = !env.isDevelopment;
   const cookieOptions = {
     httpOnly: true,
-    secure: !env.isDevelopment,
-    sameSite: "lax" as const,
+    secure: isProduction,
+    // "none" is required for cross-origin cookie sharing (frontend and API on different subdomains).
+    // "lax" blocks cookies on cross-origin requests in the browser.
+    sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
     path: "/",
   };
 
