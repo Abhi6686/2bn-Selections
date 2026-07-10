@@ -355,6 +355,12 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
         version: proposalVersion,
       });
 
+      // Read PDF file into Buffer
+      const pdfBuffer = await fs.readFile(pdfPath);
+      
+      // Delete temp file asynchronously to avoid disk buildup
+      fs.unlink(pdfPath).catch((err) => app.log.error(err, "Failed to delete temp PDF file"));
+
       // If this is an updated proposal, create a Change Order from the delta
       if (isUpdatedProposal) {
         const lastSnapshot = await BudgetSnapshotModel.findOne({
@@ -409,7 +415,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
             lines,
             totalDelta,
             notes: `Auto-generated from signed homeowner selections update (Proposal Version ${proposalVersion}).`,
-            pdfFilePath: `/uploads/pdfs/proposal-${project._id.toString()}-${proposalVersion}.pdf`,
+            pdfFilePath: `/api/projects/${project._id.toString()}/proposal-pdf`,
             approvedAt: new Date(),
             approvals: [{
               userId: user.sub,
@@ -433,7 +439,8 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
 
       // Update project status and locks
       project.proposalSigned = true;
-      project.proposalPdfUrl = `/uploads/pdfs/proposal-${project._id.toString()}-${proposalVersion}.pdf`;
+      project.proposalPdfUrl = `/api/projects/${project._id.toString()}/proposal-pdf`;
+      project.proposalPdfBuffer = pdfBuffer;
       project.proposalSignedAt = new Date();
       project.proposalSignedBy = user.email;
       project.proposalSignatureType = body.signatureType;
@@ -460,7 +467,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
         actorId: user.sub as unknown as import("mongoose").Types.ObjectId,
       });
 
-      // Send email copies in background
+      // Send email copies in background using the memory Buffer
       (async () => {
         try {
           const pmUser = await UserModel.findById(project.ownerClientId);
@@ -484,7 +491,7 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
               attachments: [
                 {
                   filename: `proposal-${project.name.replace(/\s+/g, "_")}.pdf`,
-                  path: pdfPath,
+                  content: pdfBuffer,
                 },
               ],
             });
@@ -550,6 +557,88 @@ export async function registerProjectRoutes(app: FastifyInstance): Promise<void>
       reply.type("application/pdf");
       return buffer;
     },
+  );
+
+  app.get(
+    "/api/projects/:projectId/proposal-pdf",
+    { preHandler: [requireAuth, requireProjectAccess] },
+    async (request, reply) => {
+      const { projectId } = getProjectParams(request);
+      const project = await ProjectModel.findById(projectId);
+      if (!project) {
+        return reply.code(404).send({ error: "Project not found" });
+      }
+      if (!project.proposalPdfBuffer) {
+        return reply.code(404).send({ error: "Signed proposal PDF not found in database" });
+      }
+
+      reply.type("application/pdf");
+      reply.header("Content-Disposition", `inline; filename="proposal-${project.name.replace(/\s+/g, "_")}.pdf"`);
+      return project.proposalPdfBuffer;
+    }
+  );
+
+  app.post(
+    "/api/projects/:projectId/resend-signed-proposal",
+    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    async (request, reply) => {
+      const { projectId } = getProjectParams(request);
+      const project = await ProjectModel.findById(projectId);
+      if (!project) {
+        return reply.code(404).send({ error: "Project not found" });
+      }
+      if (!project.proposalPdfBuffer) {
+        return reply.code(400).send({ error: "No signed proposal PDF exists for this project" });
+      }
+
+      project.proposalEmailStatus = "sending";
+      project.proposalEmailError = "";
+      await project.save();
+
+      setImmediate(async () => {
+        try {
+          const pmUser = await UserModel.findById(project.ownerClientId);
+          const endUsers = await UserModel.find({ _id: { $in: project.endUserIds } });
+          const recipients = [pmUser?.email, ...endUsers.map((u) => u.email)].filter(Boolean) as string[];
+
+          const emailHtml = `
+            <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;">
+              <h2 style="color:#0f3e20;">2bn Selections — Proposal Signed</h2>
+              <p>Here is the signed selections proposal for project <strong>${project.name}</strong> signed by <strong>${project.clientName}</strong>.</p>
+              <p>Please find the attached signed PDF document for your records.</p>
+              <p style="color:#666;font-size:12px;">This is an automated notification from 2bn Selections.</p>
+            </div>
+          `;
+
+          for (const email of recipients) {
+            await sendEmail({
+              to: email,
+              subject: `Signed Selections Proposal — ${project.name}`,
+              html: emailHtml,
+              attachments: [
+                {
+                  filename: `proposal-${project.name.replace(/\s+/g, "_")}.pdf`,
+                  content: project.proposalPdfBuffer,
+                },
+              ],
+            });
+          }
+
+          await ProjectModel.updateOne(
+            { _id: project._id },
+            { $set: { proposalEmailStatus: "sent", proposalEmailError: "" } }
+          );
+        } catch (emailErr: any) {
+          app.log.error(emailErr, `Failed to resend proposal PDF email background job`);
+          await ProjectModel.updateOne(
+            { _id: project._id },
+            { $set: { proposalEmailStatus: "failed", proposalEmailError: emailErr?.message || String(emailErr) } }
+          );
+        }
+      });
+
+      return { success: true, message: "Email resend queued successfully" };
+    }
   );
   
   app.post(

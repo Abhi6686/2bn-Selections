@@ -18,7 +18,7 @@ export async function sendEmail(input: {
   to: string;
   subject: string;
   html: string;
-  attachments?: Array<{ filename: string; path: string }>;
+  attachments?: Array<{ filename: string; path?: string; content?: Buffer }>;
 }): Promise<void> {
   if (!transporter) {
     console.info(`[email:dev] To: ${input.to}\nSubject: ${input.subject}\n${input.html}`);
@@ -33,7 +33,11 @@ export async function sendEmail(input: {
     to: input.to,
     subject: input.subject,
     html: input.html,
-    attachments: input.attachments,
+    attachments: input.attachments?.map((a) => ({
+      filename: a.filename,
+      path: a.path,
+      content: a.content,
+    })),
   });
 }
 

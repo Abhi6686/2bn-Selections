@@ -299,6 +299,16 @@ export function useSubmitSelections(projectId: string) {
   });
 }
 
+export function useResendSignedProposal(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => projectsApi.resendSignedProposal(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+    },
+  });
+}
+
 export function useUnlockCategories(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({

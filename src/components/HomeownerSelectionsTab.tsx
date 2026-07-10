@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import SignatureCanvas from "react-signature-canvas";
+import { apiUrl } from "../config/api";
+import toast from "react-hot-toast";
 
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -110,6 +112,7 @@ interface HomeownerSelectionsTabProps {
     longitude?: number;
   };
   showPrices?: boolean;
+  onResendSignedProposal?: () => Promise<void>;
 }
 
 
@@ -456,6 +459,7 @@ function ReviewSubmitPanel({
   proposalSignatureIp,
   proposalSignatureGeo,
   showPrices = true,
+  onResendSignedProposal,
 }: {
   sections: HOSection[];
   decideLaterKeys: Set<string>;
@@ -480,6 +484,7 @@ function ReviewSubmitPanel({
     longitude?: number;
   };
   showPrices?: boolean;
+  onResendSignedProposal?: () => Promise<void>;
 }) {
   const signatureRef = useRef<SignatureCanvas>(null);
   const [localState, setLocalState] = useState<"draft" | "submitted" | "signed">(() => {
@@ -565,9 +570,9 @@ function ReviewSubmitPanel({
           </div>
 
           <div className="flex flex-wrap gap-3 justify-center pt-2">
-            {projectId && (
+            {!proposalSigned && projectId && (
               <a 
-                href={`http://localhost:3001/api/projects/${projectId}/proposal-draft-pdf`} 
+                href={apiUrl(`/api/projects/${projectId}/proposal-draft-pdf`)} 
                 target="_blank" 
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-xl font-bold text-xs hover:opacity-90 transition-all cursor-pointer border border-border"
@@ -577,7 +582,7 @@ function ReviewSubmitPanel({
             )}
             {proposalSigned && proposalPdfUrl && (
               <a 
-                href={proposalPdfUrl.startsWith("http") ? proposalPdfUrl : `http://localhost:3001${proposalPdfUrl}`}
+                href={apiUrl(proposalPdfUrl)}
                 target="_blank" 
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-bold text-xs hover:opacity-90 transition-all cursor-pointer shadow-sm"
@@ -810,11 +815,26 @@ function ReviewSubmitPanel({
                       <span className="text-muted-foreground">The system was unable to deliver copies via email: {proposalEmailError || "SMTP connection issue"}. However, your signed proposal is saved and downloadable below.</span>
                     </div>
                   )}
+                  {proposalSigned && onResendSignedProposal && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          await onResendSignedProposal();
+                          toast.success("Signed proposal email resend queued!");
+                        } catch (err: any) {
+                          toast.error(err.message || "Failed to resend email");
+                        }
+                      }}
+                      className="mt-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer mx-auto"
+                    >
+                      🔄 Resend Signed Proposal Email
+                    </button>
+                  )}
                 </div>
               )}
 
               {proposalPdfUrl && (
-                <a href={proposalPdfUrl.startsWith("http") ? proposalPdfUrl : `http://localhost:3001${proposalPdfUrl}`} target="_blank" rel="noreferrer"
+                <a href={apiUrl(proposalPdfUrl)} target="_blank" rel="noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:opacity-90 transition-all">
                   📥 Download Signed PDF
                 </a>
@@ -1316,6 +1336,7 @@ export function HomeownerSelectionsTab({
   proposalSignatureIp,
   proposalSignatureGeo,
   showPrices = true,
+  onResendSignedProposal,
 }: HomeownerSelectionsTabProps) {
 
 
@@ -1592,6 +1613,7 @@ export function HomeownerSelectionsTab({
                   proposalEmailError={proposalEmailError}
                   proposalSignedAt={proposalSignedAt}
                   proposalSignedBy={proposalSignedBy}
+                  onResendSignedProposal={onResendSignedProposal}
                   proposalSignatureType={proposalSignatureType}
                   proposalTypedName={proposalTypedName}
                   proposalSignatureIp={proposalSignatureIp}
@@ -1896,6 +1918,7 @@ export function HomeownerSelectionsTab({
                   proposalEmailError={proposalEmailError}
                   proposalSignedAt={proposalSignedAt}
                   proposalSignedBy={proposalSignedBy}
+                  onResendSignedProposal={onResendSignedProposal}
                   proposalSignatureType={proposalSignatureType}
                   proposalTypedName={proposalTypedName}
                   proposalSignatureIp={proposalSignatureIp}

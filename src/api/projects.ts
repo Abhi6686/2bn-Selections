@@ -350,6 +350,14 @@ export async function submitProjectSelections(
   });
 }
 
+export async function resendSignedProposal(
+  projectId: string,
+): Promise<{ success: boolean; message: string }> {
+  return apiFetch(`/api/projects/${projectId}/resend-signed-proposal`, {
+    method: "POST",
+  });
+}
+
 export async function unlockProjectCategories(
 
   projectId: string,

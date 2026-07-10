@@ -16,6 +16,7 @@ import {
   useSubmitProposal,
   useSubmitSelections,
   useUnlockCategories,
+  useResendSignedProposal,
 } from "../api/hooks";
 import * as projectsApi from "../api/projects";
 import { apiFetch } from "../api/client";
@@ -103,6 +104,7 @@ export function ApiProjectDetailPage() {
   const submitProposalMutation = useSubmitProposal(projectId);
   const submitSelectionsMutation = useSubmitSelections(projectId);
   const unlockCategoriesMutation = useUnlockCategories(projectId);
+  const resendProposalMutation = useResendSignedProposal(projectId);
 
   const project = projectQuery.data;
   const selections = selectionsQuery.data ?? [];
@@ -1040,6 +1042,9 @@ export function ApiProjectDetailPage() {
           }}
           onSubmitProposal={async (body) => {
             await submitProposalMutation.mutateAsync(body);
+          }}
+          onResendSignedProposal={async () => {
+            await resendProposalMutation.mutateAsync();
           }}
           proposalPdfUrl={project?.proposalPdfUrl}
           projectStatus={project?.status}

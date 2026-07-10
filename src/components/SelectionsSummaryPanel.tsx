@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from "react";
+import { apiUrl } from "../config/api";
 import type { ApiProject, ApiProjectSelection } from "@2bn/shared";
 import { usePatchSelection, useSubmitProposal, useUnlockCategories } from "../api/hooks";
 import { formatCurrency } from "../utils/format";
@@ -400,7 +401,7 @@ export function SelectionsSummaryPanel({
             <div className="space-y-2">
               {project.proposalPdfUrl && (
                 <a 
-                  href={`http://localhost:3001${project.proposalPdfUrl}`} 
+                  href={apiUrl(project.proposalPdfUrl)} 
                   target="_blank" 
                   rel="noreferrer" 
                   className="w-full"

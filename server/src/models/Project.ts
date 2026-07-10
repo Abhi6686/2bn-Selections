@@ -40,6 +40,7 @@ const projectSchema = new Schema(
     allowancesByCategory: { type: Map, of: Number, default: {} },
     proposalSigned: { type: Boolean, default: false },
     proposalPdfUrl: { type: String },
+    proposalPdfBuffer: { type: Buffer },
     proposalSignedAt: { type: Date },
     proposalSignedBy: { type: String },
     proposalSignatureType: { type: String },
