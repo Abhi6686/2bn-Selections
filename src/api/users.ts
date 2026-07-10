@@ -28,3 +28,21 @@ export async function inviteUser(input: {
 export async function fetchActivities(): Promise<ApiActivityLog[]> {
   return apiFetch("/api/users/activity");
 }
+
+export async function deleteUser(userId: string): Promise<{ success: boolean }> {
+  return apiFetch(`/api/users/${userId}`, {
+    method: "DELETE",
+  });
+}
+
+export async function restoreUser(userId: string): Promise<{ success: boolean }> {
+  return apiFetch(`/api/users/${userId}/restore`, {
+    method: "POST",
+  });
+}
+
+export async function permanentlyDeleteUser(userId: string): Promise<{ success: boolean }> {
+  return apiFetch(`/api/users/${userId}/permanent`, {
+    method: "DELETE",
+  });
+}

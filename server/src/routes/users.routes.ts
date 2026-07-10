@@ -124,4 +124,108 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
       }));
     }
   );
+
+  // Soft-delete user to recycle bin (blocked status)
+  app.delete(
+    "/api/users/:userId",
+    { preHandler: [requireAuth, requireRole("admin")] },
+    async (request, reply) => {
+      const orgId = request.user!.orgId;
+      const { userId } = request.params as { userId: string };
+
+      const user = await UserModel.findOne({ _id: userId, orgId });
+      if (!user) {
+        return reply.code(404).send({ error: "User not found" });
+      }
+
+      if (user._id.toString() === request.user!.sub) {
+        return reply.code(400).send({ error: "You cannot delete yourself" });
+      }
+
+      const previousStatus = user.status;
+      user.status = "blocked";
+      await user.save();
+
+      // Log the activity
+      const actor = await UserModel.findById(request.user!.sub);
+      await ActivityLogModel.create({
+        orgId,
+        userId: request.user!.sub,
+        userName: actor?.name || "System Admin",
+        action: "user_deleted",
+        details: `Moved ${user.name} (${user.email}) to Recycle Bin (status changed from ${previousStatus} to blocked)`,
+      });
+
+      return { success: true, user: mapUser(user as never) };
+    }
+  );
+
+  // Restore user from recycle bin
+  app.post(
+    "/api/users/:userId/restore",
+    { preHandler: [requireAuth, requireRole("admin")] },
+    async (request, reply) => {
+      const orgId = request.user!.orgId;
+      const { userId } = request.params as { userId: string };
+
+      const user = await UserModel.findOne({ _id: userId, orgId });
+      if (!user) {
+        return reply.code(404).send({ error: "User not found" });
+      }
+
+      if (user.status !== "blocked") {
+        return reply.code(400).send({ error: "User is not in the Recycle Bin" });
+      }
+
+      // If they have a password configured (and not the placeholder), active, else invited
+      const restoredStatus = user.passwordHash && user.passwordHash.length > 30 ? "active" : "invited";
+      user.status = restoredStatus;
+      await user.save();
+
+      // Log the activity
+      const actor = await UserModel.findById(request.user!.sub);
+      await ActivityLogModel.create({
+        orgId,
+        userId: request.user!.sub,
+        userName: actor?.name || "System Admin",
+        action: "user_restored",
+        details: `Restored ${user.name} (${user.email}) from Recycle Bin (status changed to ${restoredStatus})`,
+      });
+
+      return { success: true, user: mapUser(user as never) };
+    }
+  );
+
+  // Permanently delete user from database
+  app.delete(
+    "/api/users/:userId/permanent",
+    { preHandler: [requireAuth, requireRole("admin")] },
+    async (request, reply) => {
+      const orgId = request.user!.orgId;
+      const { userId } = request.params as { userId: string };
+
+      const user = await UserModel.findOne({ _id: userId, orgId });
+      if (!user) {
+        return reply.code(404).send({ error: "User not found" });
+      }
+
+      if (user.status !== "blocked") {
+        return reply.code(400).send({ error: "Only blocked users in the Recycle Bin can be permanently deleted" });
+      }
+
+      await UserModel.deleteOne({ _id: userId });
+
+      // Log the activity
+      const actor = await UserModel.findById(request.user!.sub);
+      await ActivityLogModel.create({
+        orgId,
+        userId: request.user!.sub,
+        userName: actor?.name || "System Admin",
+        action: "user_permanently_deleted",
+        details: `Permanently deleted ${user.name} (${user.email}) from the database`,
+      });
+
+      return { success: true };
+    }
+  );
 }

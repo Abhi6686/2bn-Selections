@@ -10,7 +10,7 @@ const userSchema = new Schema(
     passwordHash: { type: String },
     status: {
       type: String,
-      enum: ["invited", "active", "disabled"],
+      enum: ["invited", "active", "disabled", "blocked"],
       default: "active",
     },
     lastLoginAt: { type: Date },

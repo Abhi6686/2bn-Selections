@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useUsers, useInviteUser, useActivities } from "../api/hooks";
+import { useUsers, useInviteUser, useActivities, useDeleteUser, useRestoreUser, usePermanentlyDeleteUser } from "../api/hooks";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
-import { Users, UserPlus, ClipboardList, Shield, Briefcase, Mail, Calendar, Clock, RefreshCw } from "lucide-react";
+import { Users, UserPlus, ClipboardList, Shield, Briefcase, Mail, Calendar, Clock, RefreshCw, Trash2, RotateCcw, Ban } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatDateTime } from "../utils/format";
+import type { ApiUser } from "@2bn/shared";
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -110,6 +111,12 @@ function InviteModal({ isOpen, onClose }: InviteModalProps) {
             </div>
           </div>
 
+          {inviteMutation.isPending && (
+            <div className="text-center space-y-1 py-1 text-xs text-muted-foreground animate-pulse font-medium">
+              <p>⏳ Creating user account and queueing invitation...</p>
+            </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -120,7 +127,7 @@ function InviteModal({ isOpen, onClose }: InviteModalProps) {
               Cancel
             </button>
             <Button type="submit" disabled={inviteMutation.isPending} className="flex-1">
-              {inviteMutation.isPending ? "Sending..." : "Send Invite"}
+              {inviteMutation.isPending ? "Creating..." : "Send Invite"}
             </Button>
           </div>
         </form>
@@ -132,13 +139,58 @@ function InviteModal({ isOpen, onClose }: InviteModalProps) {
 export function UsersPage() {
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useUsers();
   const { data: activities = [], isLoading: activitiesLoading, refetch: refetchActivities } = useActivities();
+  const deleteMutation = useDeleteUser();
+  const restoreMutation = useRestoreUser();
+  const permanentDeleteMutation = usePermanentlyDeleteUser();
+
   const [isInviteOpen, setIsInviteOpen] = useState(false);
-  const [activeSubTab, setActiveSubTab] = useState<"directory" | "activity">("directory");
+  const [activeSubTab, setActiveSubTab] = useState<"directory" | "recycle" | "activity">("directory");
+
+  // Confirmation Modals State
+  const [userToDelete, setUserToDelete] = useState<ApiUser | null>(null);
+  const [userToRestore, setUserToRestore] = useState<ApiUser | null>(null);
+  const [userToPermanentlyDelete, setUserToPermanentlyDelete] = useState<ApiUser | null>(null);
+
+  const activeUsers = users.filter((u) => u.status !== "blocked");
+  const blockedUsers = users.filter((u) => u.status === "blocked");
 
   const handleRefresh = () => {
     refetchUsers();
     refetchActivities();
     toast.success("Refreshed user directory");
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(userToDelete.id);
+      toast.success(`${userToDelete.name} moved to Recycle Bin`);
+      setUserToDelete(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete user");
+    }
+  };
+
+  const handleRestoreConfirm = async () => {
+    if (!userToRestore) return;
+    try {
+      await restoreMutation.mutateAsync(userToRestore.id);
+      toast.success(`${userToRestore.name} restored successfully`);
+      setUserToRestore(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to restore user");
+    }
+  };
+
+  const handlePermanentDeleteConfirm = async () => {
+    if (!userToPermanentlyDelete) return;
+    try {
+      await permanentDeleteMutation.mutateAsync(userToPermanentlyDelete.id);
+      toast.success(`${userToPermanentlyDelete.name} permanently deleted`);
+      setUserToPermanentlyDelete(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete user permanently");
+    }
   };
 
   return (
@@ -177,7 +229,20 @@ export function UsersPage() {
         >
           <span className="flex items-center gap-2">
             <Users size={16} />
-            Team Directory ({users.length})
+            Team Directory ({activeUsers.length})
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveSubTab("recycle")}
+          className={`pb-3 text-sm font-bold transition-all border-b-2 cursor-pointer ${
+            activeSubTab === "recycle"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <Trash2 size={16} />
+            Recycle Bin ({blockedUsers.length})
           </span>
         </button>
         <button
@@ -196,13 +261,13 @@ export function UsersPage() {
       </div>
 
       {/* Content */}
-      {activeSubTab === "directory" ? (
+      {activeSubTab === "directory" && (
         <Card className="border border-border shadow-md rounded-2xl overflow-hidden bg-card">
           <CardContent className="p-0">
             {usersLoading ? (
               <div className="p-12 text-center text-muted-foreground">Loading directory…</div>
-            ) : users.length === 0 ? (
-              <div className="p-12 text-center text-muted-foreground">No users found.</div>
+            ) : activeUsers.length === 0 ? (
+              <div className="p-12 text-center text-muted-foreground">No active users found.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -213,10 +278,11 @@ export function UsersPage() {
                       <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
                       <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Registration</th>
                       <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Last Login</th>
+                      <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
-                    {users.map((member) => (
+                    {activeUsers.map((member) => (
                       <tr key={member.id} className="hover:bg-muted/10 transition-colors">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
@@ -261,7 +327,6 @@ export function UsersPage() {
                           )}
                         </td>
                         <td className="p-4">
-                          {/* registration timestamp is derived from ObjectID or createdAt. But we don't have createdAt on ApiUser yet. Let's just mock or display Date Invited if available, or if they are active, they are registered */}
                           <div className="text-xs text-foreground font-medium flex items-center gap-1.5">
                             <Calendar size={13} className="text-muted-foreground" />
                             {member.status === "active" ? "Registered" : "Invited"}
@@ -277,6 +342,16 @@ export function UsersPage() {
                             <span className="text-xs text-muted-foreground italic">Never logged in</span>
                           )}
                         </td>
+                        <td className="p-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setUserToDelete(member)}
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg cursor-pointer"
+                          >
+                            <Trash2 size={15} />
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -285,7 +360,85 @@ export function UsersPage() {
             )}
           </CardContent>
         </Card>
-      ) : (
+      )}
+
+      {activeSubTab === "recycle" && (
+        <Card className="border border-border shadow-md rounded-2xl overflow-hidden bg-card">
+          <CardContent className="p-0">
+            {usersLoading ? (
+              <div className="p-12 text-center text-muted-foreground">Loading Recycle Bin…</div>
+            ) : blockedUsers.length === 0 ? (
+              <div className="p-12 text-center text-muted-foreground">Recycle Bin is empty.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Member</th>
+                      <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
+                      <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {blockedUsers.map((member) => (
+                      <tr key={member.id} className="hover:bg-muted/10 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-destructive/10 text-destructive flex items-center justify-center font-bold text-sm">
+                              {member.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-foreground text-sm">{member.name}</div>
+                              <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                                <Mail size={12} />
+                                {member.email}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <Badge className="bg-muted text-muted-foreground border-transparent hover:bg-muted font-semibold text-xs py-0.5 px-2.5">
+                            {member.role === "admin" ? "Admin" : member.role === "project_manager" ? "Project Manager" : member.role}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <Badge className="bg-destructive/15 text-destructive border-transparent hover:bg-destructive/15 font-bold text-xs py-0.5 px-2.5 rounded-full flex items-center gap-1 w-fit">
+                            <Ban size={11} />
+                            Blocked
+                          </Badge>
+                        </td>
+                        <td className="p-4 text-right flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserToRestore(member)}
+                            className="flex items-center gap-1 h-8 px-2.5 rounded-lg border-emerald-200 text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                          >
+                            <RotateCcw size={13} />
+                            Restore
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserToPermanentlyDelete(member)}
+                            className="flex items-center gap-1 h-8 px-2.5 rounded-lg border-destructive/20 text-destructive hover:bg-destructive/5 cursor-pointer"
+                          >
+                            <Trash2 size={13} />
+                            Delete Permanently
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {activeSubTab === "activity" && (
         <Card className="border border-border shadow-md rounded-2xl overflow-hidden bg-card">
           <CardContent className="p-6">
             {activitiesLoading ? (
@@ -296,7 +449,6 @@ export function UsersPage() {
               <div className="relative border-l border-border/80 pl-6 ml-4 space-y-6">
                 {activities.map((activity) => (
                   <div key={activity.id} className="relative">
-                    {/* Circle icon marker on line */}
                     <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full bg-background border-2 border-primary flex items-center justify-center z-10 shadow-sm" />
                     <div>
                       <div className="text-sm font-semibold text-foreground">
@@ -318,6 +470,66 @@ export function UsersPage() {
 
       {/* Invite Modal */}
       <InviteModal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
+
+      {/* Confirmation Modal: Soft Delete */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-4">
+            <h3 className="text-lg font-bold text-foreground">Move to Recycle Bin</h3>
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to move <strong>{userToDelete.name}</strong> to the Recycle Bin? They will be blocked from accessing the system.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setUserToDelete(null)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" className="flex-1" onClick={handleDeleteConfirm}>
+                Move to Bin
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal: Restore */}
+      {userToRestore && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-4">
+            <h3 className="text-lg font-bold text-foreground">Restore User</h3>
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to restore <strong>{userToRestore.name}</strong>? They will regain access to the system with their previous role.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setUserToRestore(null)}>
+                Cancel
+              </Button>
+              <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handleRestoreConfirm}>
+                Restore Access
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal: Permanent Delete */}
+      {userToPermanentlyDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-4">
+            <h3 className="text-lg font-bold text-destructive">Delete User Permanently</h3>
+            <p className="text-sm text-muted-foreground">
+              Are you absolutely sure you want to permanently delete <strong>{userToPermanentlyDelete.name}</strong>? This action is irreversible.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setUserToPermanentlyDelete(null)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" className="flex-1" onClick={handlePermanentDeleteConfirm}>
+                Delete Permanently
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

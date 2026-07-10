@@ -457,5 +457,38 @@ export function useActivities() {
   });
 }
 
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: usersApi.deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
+export function useRestoreUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: usersApi.restoreUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
+export function usePermanentlyDeleteUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: usersApi.permanentlyDeleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
 
 
