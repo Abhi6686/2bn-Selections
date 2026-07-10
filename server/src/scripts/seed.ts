@@ -49,12 +49,19 @@ async function seed(): Promise<void> {
 
   console.info(`Organization: ${org.name} (${org._id})`);
 
-  await ensureSeedUser({
+  const admin = await ensureSeedUser({
     email: env.seedAdminEmail,
     name: "Stepron Admin",
     role: "admin",
     password: env.seedAdminPassword,
+    orgId: org._id, // Admin must be linked to org to invite team members
   });
+
+  // Ensure existing admin users (seeded without orgId) get patched
+  if (!admin.orgId) {
+    await admin.updateOne({ orgId: org._id });
+    console.info(`Patched orgId for admin: ${env.seedAdminEmail}`);
+  }
 
   const client = await ensureSeedUser({
     email: env.seedClientEmail,
