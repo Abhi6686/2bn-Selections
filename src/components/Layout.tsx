@@ -28,7 +28,7 @@ export function Layout() {
         { to: "/projects/new", label: "New Project", icon: Plus },
         { to: "/templates", label: "Templates", icon: FileText },
         { to: "/room-configurator", label: "Room Configurator", icon: LayoutPanelLeft },
-        ...((role === "admin" || role === "project_manager")
+        ...(role === "admin"
           ? [{ to: "/team", label: "Team Management", icon: Users }]
           : []),
         ...(role === "admin"

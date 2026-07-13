@@ -11,10 +11,10 @@ import { buildInviteEmail, sendEmail } from "../services/email.service.js";
 import { mapUser } from "../utils/mappers.js";
 
 export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
-  // Get all users in the organization (Admins and PMs only)
+  // Get all users in the organization (Admins only)
   app.get(
     "/api/users",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       if (!orgId) {
@@ -26,10 +26,10 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
-  // Invite or directly create an Admin or PM (Admins and PMs)
+  // Invite or directly create an Admin or PM (Admins only)
   app.post(
     "/api/users/invite",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       if (!orgId) {
@@ -117,10 +117,10 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
-  // Get activity history for the organization (Admins and PMs)
+  // Get activity history for the organization (Admins only)
   app.get(
     "/api/users/activity",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       if (!orgId) {
@@ -145,7 +145,7 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
   // Soft-delete user to recycle bin (blocked status)
   app.delete(
     "/api/users/:userId",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       const { userId } = request.params as { userId: string };
@@ -180,7 +180,7 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
   // Restore user from recycle bin
   app.post(
     "/api/users/:userId/restore",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       const { userId } = request.params as { userId: string };
@@ -246,10 +246,10 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
-  // Set user password directly (Admins and PMs only)
+  // Set user password directly (Admins only)
   app.post(
     "/api/users/:userId/set-password",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       const { userId } = request.params as { userId: string };
@@ -287,10 +287,10 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
-  // Send password reset magic link (Admins and PMs only)
+  // Send password reset magic link (Admins only)
   app.post(
     "/api/users/:userId/send-reset",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       const { userId } = request.params as { userId: string };
@@ -345,10 +345,10 @@ export async function registerUsersRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
-  // Resend user invitation (Admins and PMs only)
+  // Resend user invitation (Admins only)
   app.post(
     "/api/users/:userId/resend-invite",
-    { preHandler: [requireAuth, requireRole("admin", "project_manager")] },
+    { preHandler: [requireAuth, requireRole("admin")] },
     async (request, reply) => {
       const orgId = request.user!.orgId;
       const { userId } = request.params as { userId: string };

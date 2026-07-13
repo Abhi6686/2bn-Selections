@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import {
   useUsers,
   useInviteUser,
@@ -573,7 +574,11 @@ export function UsersPage() {
   const sendResetMutation = useSendResetLink();
   const resendInviteMutation = useResendInvite();
 
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, role } = useAuth();
+
+  if (role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
 
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"directory" | "recycle" | "activity">("directory");
