@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import * as authApi from "../api/auth";
+import { ApiError } from "../api/client";
 import { queryKeys } from "../api/hooks";
 import { ADMIN_PASSWORD, ADMIN_USERNAME, AUTH_STORAGE_KEY } from "../config/auth";
 import { isApiMode } from "../config/api";
@@ -50,9 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: () => authApi.fetchCurrentUser().then((response) => response.user),
     enabled: isApiMode,
     retry: false,
+    throwOnError: false,
   });
 
-  const user = isApiMode ? (meQuery.data ?? null) : legacySession
+  // If /api/auth/me returns 401/403, the session is gone — treat as logged out
+  const sessionExpired =
+    isApiMode &&
+    meQuery.error instanceof ApiError &&
+    (meQuery.error.status === 401 || meQuery.error.status === 403);
+
+  const user = isApiMode
+    ? sessionExpired
+      ? null  // session invalid — force logout in ProtectedRoute
+      : (meQuery.data ?? null)
+    : legacySession
     ? ({
         id: "legacy",
         email: legacySession.username,

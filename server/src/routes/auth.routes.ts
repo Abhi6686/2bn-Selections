@@ -94,8 +94,15 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     if (refreshToken) {
       await revokeRefreshToken(refreshToken);
     }
-    reply.clearCookie("access_token", { path: "/" });
-    reply.clearCookie("refresh_token", { path: "/" });
+    const isProduction = !env.isDevelopment;
+    const clearOptions = {
+      path: "/",
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+    };
+    reply.clearCookie("access_token", clearOptions);
+    reply.clearCookie("refresh_token", clearOptions);
     return { ok: true };
   });
 
