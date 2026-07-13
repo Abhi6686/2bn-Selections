@@ -492,6 +492,40 @@ export function usePermanentlyDeleteUser() {
   });
 }
 
+export function useSetUserPassword() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, password }: { userId: string; password: string }) =>
+      usersApi.setUserPassword(userId, password),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
+export function useSendResetLink() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: usersApi.sendResetLink,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
+export function useResendInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: usersApi.resendInvite,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+      queryClient.invalidateQueries({ queryKey: queryKeys.activities });
+    },
+  });
+}
+
 export function useOrgSettings() {
   return useQuery({
     queryKey: queryKeys.settings,

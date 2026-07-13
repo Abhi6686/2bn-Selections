@@ -100,6 +100,8 @@ export const inviteUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1).max(200),
   role: z.enum(["admin", "project_manager"]),
+  sendEmail: z.boolean().optional(),
+  temporaryPassword: z.string().min(8).max(100).optional(),
 });
 
 export const createThemeSchema = z.object({
