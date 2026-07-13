@@ -49,7 +49,8 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
 
     const tokens = await createSessionTokens(user);
     setAuthCookies(reply, tokens.accessToken, tokens.refreshToken);
-    return { user: mapUser(user as never) };
+    // Also return tokens in body so cross-origin clients can use Bearer auth
+    return { user: mapUser(user as never), accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   });
 
   app.post("/api/auth/magic-link", async (request, reply) => {
@@ -71,11 +72,14 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
 
     const tokens = await createSessionTokens(user);
     setAuthCookies(reply, tokens.accessToken, tokens.refreshToken);
-    return { user: mapUser(user as never) };
+    return { user: mapUser(user as never), accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   });
 
   app.post("/api/auth/refresh", async (request, reply) => {
-    const refreshToken = request.cookies.refresh_token;
+    // Accept refresh token from cookie OR from request body (cross-origin fallback)
+    const refreshToken = request.cookies.refresh_token
+      ?? (request.body as { refreshToken?: string } | undefined)?.refreshToken;
+
     if (!refreshToken) {
       return reply.code(401).send({ error: "No refresh token" });
     }
@@ -86,11 +90,12 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     }
 
     setAuthCookies(reply, tokens.accessToken, tokens.refreshToken);
-    return { ok: true };
+    return { ok: true, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   });
 
   app.post("/api/auth/logout", async (request, reply) => {
-    const refreshToken = request.cookies.refresh_token;
+    const refreshToken = request.cookies.refresh_token
+      ?? (request.body as { refreshToken?: string } | undefined)?.refreshToken;
     if (refreshToken) {
       await revokeRefreshToken(refreshToken);
     }
@@ -105,6 +110,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     reply.clearCookie("refresh_token", clearOptions);
     return { ok: true };
   });
+
 
   app.get("/api/auth/me", { preHandler: requireAuth }, async (request, reply) => {
     const user = await UserModel.findById(request.user!.sub);

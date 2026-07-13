@@ -9,6 +9,7 @@ import {
 } from "react";
 import * as authApi from "../api/auth";
 import { ApiError } from "../api/client";
+import { setTokens, clearTokens } from "../api/tokens";
 import { queryKeys } from "../api/hooks";
 import { ADMIN_PASSWORD, ADMIN_USERNAME, AUTH_STORAGE_KEY } from "../config/auth";
 import { isApiMode } from "../config/api";
@@ -77,7 +78,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {
       if (isApiMode) {
-        const response = await authApi.loginWithPassword(email, password);
+        const response = await authApi.loginWithPassword(email, password) as {
+          user: import("@2bn/shared").ApiUser;
+          accessToken?: string;
+          refreshToken?: string;
+        };
+        // Store tokens for Bearer auth (cross-origin cookie fallback)
+        if (response.accessToken && response.refreshToken) {
+          setTokens(response.accessToken, response.refreshToken);
+        }
         queryClient.setQueryData(queryKeys.me, response.user);
         return true;
       }
@@ -98,7 +107,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithMagicLink = useCallback(
     async (token: string): Promise<boolean> => {
-      const response = await authApi.verifyMagicLink(token);
+      const response = await authApi.verifyMagicLink(token) as {
+        user: import("@2bn/shared").ApiUser;
+        accessToken?: string;
+        refreshToken?: string;
+      };
+      if (response.accessToken && response.refreshToken) {
+        setTokens(response.accessToken, response.refreshToken);
+      }
       queryClient.setQueryData(queryKeys.me, response.user);
       return true;
     },
@@ -128,6 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error("Background API logout failed:", err);
       } finally {
+        clearTokens();
         queryClient.setQueryData(queryKeys.me, null);
         queryClient.clear();
       }
