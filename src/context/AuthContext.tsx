@@ -111,9 +111,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async (): Promise<void> => {
     if (isApiMode) {
-      await authApi.logoutApi();
-      queryClient.setQueryData(queryKeys.me, null);
-      queryClient.clear();
+      try {
+        await authApi.logoutApi();
+      } catch (err) {
+        console.error("Background API logout failed:", err);
+      } finally {
+        queryClient.setQueryData(queryKeys.me, null);
+        queryClient.clear();
+      }
       return;
     }
     sessionStorage.removeItem(AUTH_STORAGE_KEY);
