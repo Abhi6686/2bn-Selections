@@ -10,8 +10,20 @@ import { SelectionSectionModel } from "../models/SelectionSection.js";
 import { ThemeModel } from "../models/Theme.js";
 import { verifyAccessToken } from "../services/jwt.service.js";
 import { scoreLibraryItems, sortByRecommendation } from "../services/recommendation.service.js";
+import { logActivity } from "../services/activity.service.js";
 import { mapLibraryItem } from "../utils/mappers.js";
 import masterCategories from "../../../src/data/masterCategories.json" with { type: "json" };
+
+/** Resolve the orgId for a user, falling back to the default "2bn" org for staff without an explicit orgId */
+async function resolveOrgId(userOrgId: string | undefined, role: string): Promise<string | undefined> {
+  if (userOrgId) return userOrgId;
+  if (role === "admin" || role === "project_manager") {
+    const { OrganizationModel } = await import("../models/Organization.js");
+    const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
+    return defaultOrg?._id.toString();
+  }
+  return undefined;
+}
 
 export async function registerLibraryRoutes(app: FastifyInstance): Promise<void> {
   app.get("/api/master-categories", async (request) => {
@@ -23,6 +35,10 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       try {
         const decoded = await verifyAccessToken(token);
         orgId = decoded.orgId;
+        // Fallback for staff without explicit orgId
+        if (!orgId && (decoded.role === "admin" || decoded.role === "project_manager")) {
+          orgId = await resolveOrgId(undefined, decoded.role);
+        }
       } catch {}
     }
 
@@ -38,8 +54,8 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
     const themes = await ThemeModel.find({ orgId, active: true });
 
     const returnedSections = sections.length > 0 ? sections : masterCategories.sections;
-    const styleThemes = themes.length > 0 
-      ? themes.map(t => t.name) 
+    const styleThemes = themes.length > 0
+      ? themes.map(t => t.name)
       : masterCategories.meta.styleThemesFromDocument;
 
     const flatCategoriesSet = new Set<string>();
@@ -72,24 +88,11 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
     { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
     async (request, reply) => {
       const user = request.user!;
-      let orgId = user.orgId;
-      if (!orgId && (user.role === "admin" || user.role === "project_manager")) {
-        const { OrganizationModel } = await import("../models/Organization.js");
-        const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
-        if (defaultOrg) {
-          orgId = defaultOrg._id.toString();
-        }
-      }
+      const orgId = await resolveOrgId(user.orgId, user.role);
+      if (!orgId) return reply.code(400).send({ error: "User missing organization" });
 
-      const body = request.body as {
-        name: string;
-        order?: number;
-        groups?: any[];
-      };
-
-      if (!body.name) {
-        return reply.code(400).send({ error: "Section name is required" });
-      }
+      const body = request.body as { name: string; order?: number; groups?: any[] };
+      if (!body.name) return reply.code(400).send({ error: "Section name is required" });
 
       let order = body.order;
       if (order === undefined) {
@@ -98,13 +101,8 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       }
 
       const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-
       const section = await SelectionSectionModel.create({
-        orgId,
-        name: body.name,
-        slug,
-        order,
-        groups: body.groups || [],
+        orgId, name: body.name, slug, order, groups: body.groups || [],
       });
 
       return { section };
@@ -118,31 +116,18 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const { id } = request.params as { id: string };
       const user = request.user!;
       const filter: Record<string, unknown> = { _id: id };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      }
+      if (user.orgId) filter.orgId = user.orgId;
 
       const section = await SelectionSectionModel.findOne(filter);
-      if (!section) {
-        return reply.code(404).send({ error: "Section not found" });
-      }
+      if (!section) return reply.code(404).send({ error: "Section not found" });
 
-      const body = request.body as {
-        name?: string;
-        order?: number;
-        groups?: any[];
-      };
-
+      const body = request.body as { name?: string; order?: number; groups?: any[] };
       if (body.name !== undefined) {
         section.name = body.name;
         section.slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       }
-      if (body.order !== undefined) {
-        section.order = body.order;
-      }
-      if (body.groups !== undefined) {
-        section.set("groups", body.groups);
-      }
+      if (body.order !== undefined) section.order = body.order;
+      if (body.groups !== undefined) section.set("groups", body.groups);
 
       await section.save();
       return { section };
@@ -156,14 +141,10 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const { id } = request.params as { id: string };
       const user = request.user!;
       const filter: Record<string, unknown> = { _id: id };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      }
+      if (user.orgId) filter.orgId = user.orgId;
 
       const result = await SelectionSectionModel.deleteOne(filter);
-      if (result.deletedCount === 0) {
-        return reply.code(404).send({ error: "Section not found" });
-      }
+      if (result.deletedCount === 0) return reply.code(404).send({ error: "Section not found" });
 
       return { deleted: true };
     }
@@ -192,14 +173,11 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
 
       const uniqueId = Math.random().toString(36).substring(2, 15);
       const baseName = path.basename(body.fileName, path.extname(body.fileName))
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "-");
+        .toLowerCase().replace(/[^a-z0-9]/g, "-");
       const finalFileName = `${Date.now()}-${uniqueId}-${baseName}.${extension}`;
 
       const targetDir = path.join(env.uploadsDir, "materials");
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-      }
+      if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 
       const filePath = path.join(targetDir, finalFileName);
       fs.writeFileSync(filePath, buffer);
@@ -208,7 +186,8 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
     }
   );
 
-
+  // ─── GET /api/library ────────────────────────────────────────────────────────
+  // Fix: project_manager now falls back to default org just like admin
   app.get(
     "/api/library",
     { preHandler: requireAuth },
@@ -222,25 +201,14 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
         showDeleted?: string;
       };
 
+      const orgId = await resolveOrgId(user.orgId, user.role);
+
       const filter: Record<string, unknown> = { active: true };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      } else if (user.role === "admin") {
-        const { OrganizationModel } = await import("../models/Organization.js");
-        const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
-        if (defaultOrg) {
-          filter.orgId = defaultOrg._id;
-        }
-      }
-      if (query.category) {
-        filter.category = query.category;
-      }
-      if (query.categoryKey) {
-        filter.categoryKey = query.categoryKey;
-      }
-      if (query.level) {
-        filter.level = query.level;
-      }
+      if (orgId) filter.orgId = orgId;
+
+      if (query.category) filter.category = query.category;
+      if (query.categoryKey) filter.categoryKey = query.categoryKey;
+      if (query.level) filter.level = query.level;
 
       if (query.showDeleted === "true") {
         filter.isDeleted = true;
@@ -263,6 +231,7 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
     },
   );
 
+  // ─── POST /api/library ───────────────────────────────────────────────────────
   app.post(
     "/api/library",
     { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
@@ -270,14 +239,8 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const body = createLibraryItemSchema.parse(request.body);
       const user = request.user!;
 
-      let orgId = user.orgId;
-      if (!orgId && (user.role === "admin" || user.role === "project_manager")) {
-        const { OrganizationModel } = await import("../models/Organization.js");
-        const defaultOrg = await OrganizationModel.findOne({ slug: "2bn" });
-        if (defaultOrg) {
-          orgId = defaultOrg._id.toString();
-        }
-      }
+      const orgId = await resolveOrgId(user.orgId, user.role);
+      if (!orgId) return reply.code(400).send({ error: "User missing organization" });
 
       const item = await LibraryItemModel.create({
         orgId,
@@ -301,10 +264,21 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
         isDeleted: false,
       });
 
+      logActivity({
+        user,
+        orgId,
+        action: "material_added",
+        resourceType: "library_item",
+        resourceId: item._id.toString(),
+        resourceName: `${body.manufacturer} — ${body.product}`,
+        details: `Added material "${body.product}" in category "${body.category}" (Level: ${body.level})`,
+      });
+
       return { item: mapLibraryItem(item) };
     },
   );
 
+  // ─── PATCH /api/library/:id ──────────────────────────────────────────────────
   app.patch(
     "/api/library/:id",
     { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
@@ -314,14 +288,10 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const user = request.user!;
 
       const filter: Record<string, unknown> = { _id: id };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      }
+      if (user.orgId) filter.orgId = user.orgId;
 
       const item = await LibraryItemModel.findOne(filter);
-      if (!item) {
-        return reply.code(404).send({ error: "Library item not found" });
-      }
+      if (!item) return reply.code(404).send({ error: "Library item not found" });
 
       if (body.category !== undefined) item.category = body.category;
       if (body.categoryKey !== undefined) item.categoryKey = body.categoryKey;
@@ -341,10 +311,23 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       if (body.dimensionsImageUrl !== undefined) item.dimensionsImageUrl = body.dimensionsImageUrl;
 
       await item.save();
+
+      const orgId = await resolveOrgId(user.orgId, user.role) || user.orgId || "";
+      logActivity({
+        user,
+        orgId,
+        action: "material_updated",
+        resourceType: "library_item",
+        resourceId: item._id.toString(),
+        resourceName: `${item.manufacturer} — ${item.product}`,
+        details: `Updated material "${item.product}" in category "${item.category}"`,
+      });
+
       return { item: mapLibraryItem(item) };
     },
   );
 
+  // ─── DELETE /api/library/:id ─────────────────────────────────────────────────
   app.delete(
     "/api/library/:id",
     { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
@@ -353,26 +336,38 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const user = request.user!;
 
       const filter: Record<string, unknown> = { _id: id };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      }
+      if (user.orgId) filter.orgId = user.orgId;
 
       const item = await LibraryItemModel.findOne(filter);
-      if (!item) {
-        return reply.code(404).send({ error: "Library item not found" });
-      }
+      if (!item) return reply.code(404).send({ error: "Library item not found" });
 
-      if (item.isDeleted) {
+      const orgId = await resolveOrgId(user.orgId, user.role) || user.orgId || "";
+      const isPermanent = item.isDeleted;
+
+      if (isPermanent) {
         await LibraryItemModel.deleteOne({ _id: item._id });
+        logActivity({
+          user, orgId, action: "material_permanently_deleted",
+          resourceType: "library_item", resourceId: id,
+          resourceName: `${item.manufacturer} — ${item.product}`,
+          details: `Permanently deleted material "${item.product}"`,
+        });
         return { deleted: true, permanent: true };
       } else {
         item.isDeleted = true;
         await item.save();
+        logActivity({
+          user, orgId, action: "material_deleted",
+          resourceType: "library_item", resourceId: id,
+          resourceName: `${item.manufacturer} — ${item.product}`,
+          details: `Moved material "${item.product}" to recycle bin`,
+        });
         return { deleted: true, permanent: false, item: mapLibraryItem(item) };
       }
     },
   );
 
+  // ─── POST /api/library/:id/restore ──────────────────────────────────────────
   app.post(
     "/api/library/:id/restore",
     { preHandler: [requireAuth, requireRole("admin", "project_manager", "client")] },
@@ -381,17 +376,22 @@ export async function registerLibraryRoutes(app: FastifyInstance): Promise<void>
       const user = request.user!;
 
       const filter: Record<string, unknown> = { _id: id };
-      if (user.orgId) {
-        filter.orgId = user.orgId;
-      }
+      if (user.orgId) filter.orgId = user.orgId;
 
       const item = await LibraryItemModel.findOne(filter);
-      if (!item) {
-        return reply.code(404).send({ error: "Library item not found" });
-      }
+      if (!item) return reply.code(404).send({ error: "Library item not found" });
 
       item.isDeleted = false;
       await item.save();
+
+      const orgId = await resolveOrgId(user.orgId, user.role) || user.orgId || "";
+      logActivity({
+        user, orgId, action: "material_restored",
+        resourceType: "library_item", resourceId: id,
+        resourceName: `${item.manufacturer} — ${item.product}`,
+        details: `Restored material "${item.product}" from recycle bin`,
+      });
+
       return { restored: true, item: mapLibraryItem(item) };
     },
   );

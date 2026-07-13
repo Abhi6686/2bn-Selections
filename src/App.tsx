@@ -14,6 +14,7 @@ import { SelectionTemplatesPage } from "./pages/SelectionTemplatesPage";
 import { RoomTypesPage } from "./pages/RoomTypesPage";
 import { UsersPage } from "./pages/UsersPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { ActivityPage } from "./pages/ActivityPage";
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
                 <Route path="/room-configurator" element={<RoomTypesPage />} />
                 <Route path="/team" element={<UsersPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/activity" element={<ActivityPage />} />
               </Route>
             </Route>
 

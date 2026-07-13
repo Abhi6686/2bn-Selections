@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as projectsApi from "./projects";
 import * as usersApi from "./users";
 import * as settingsApi from "./settings";
+import * as activityApi from "./activity";
+import type { ActivityFilters } from "./activity";
 import type { ApiLibraryItem, ApiSelectionTemplate, ApiRoomType } from "@2bn/shared";
 
 
@@ -23,6 +25,9 @@ export const queryKeys = {
   roomTypes: ["room-types"] as const,
   users: ["users"] as const,
   activities: ["users", "activities"] as const,
+  activityFeed: (filters?: string) => ["activity", "feed", filters ?? ""] as const,
+  activityStats: ["activity", "stats"] as const,
+  activityUsers: ["activity", "users"] as const,
   settings: ["settings"] as const,
 };
 
@@ -554,6 +559,40 @@ export function useTestResend() {
     mutationFn: settingsApi.testResend,
   });
 }
+
+// ─── Activity Monitor Hooks ───────────────────────────────────────────────────
+
+export function useActivityFeed(
+  filters: ActivityFilters = {},
+  options?: { enabled?: boolean; refetchInterval?: number }
+) {
+  const filterKey = JSON.stringify(filters);
+  return useQuery({
+    queryKey: queryKeys.activityFeed(filterKey),
+    queryFn: () => activityApi.fetchActivityFeed(filters),
+    enabled: options?.enabled !== false,
+    refetchInterval: options?.refetchInterval,
+    staleTime: 10_000,
+  });
+}
+
+export function useActivityStats(options?: { refetchInterval?: number }) {
+  return useQuery({
+    queryKey: queryKeys.activityStats,
+    queryFn: activityApi.fetchActivityStats,
+    refetchInterval: options?.refetchInterval,
+    staleTime: 15_000,
+  });
+}
+
+export function useActivityUsers() {
+  return useQuery({
+    queryKey: queryKeys.activityUsers,
+    queryFn: activityApi.fetchActivityUsers,
+    staleTime: 60_000,
+  });
+}
+
 
 
 
