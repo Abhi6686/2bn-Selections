@@ -19,7 +19,7 @@ The Admin is the master user of the contractor organization. They possess full s
 
 ### 1.2 Project Manager (PM)
 The Project Manager is the day-to-day coordinator on the builder team. They set up individual projects and manage selection configurations directly with homeowners.
-* **Scope of Access:** Read and write access to projects, materials, rooms, and templates. Read-only access to the team directory. No access to System Settings or the Recycle Bin.
+* **Scope of Access:** Read and write access to projects, materials, rooms, and templates. No access to the Team Directory, System Settings, or the Recycle Bin.
 * **Core Duties:**
   * Create new projects, select templates, and configure customized selection sheets.
   * Invite homeowners to projects and assign selection deadlines.
@@ -47,7 +47,7 @@ graph TD
     User([Logged In User]) --> Role{User Role}
     
     Role -->|Admin| NavAdmin[Dashboard, Material Library, New Project, Templates, Room Configurator, Team Management, System Settings]
-    Role -->|Project Manager| NavPM[Dashboard, Material Library, New Project, Templates, Room Configurator, Team Management]
+    Role -->|Project Manager| NavPM[Dashboard, Material Library, New Project, Templates, Room Configurator]
     Role -->|Homeowner| NavHome[My Selections, Material Library]
 ```
 
@@ -95,8 +95,8 @@ The configuration dashboard for system connectivity and organization details.
 
 ---
 
-### 3.4 Team Directory & Recycle Bin (/team)
-Manage platform access for organization employees.
+### 3.4 Team Directory & Recycle Bin (Admins Only) (/team)
+Manage platform access for organization employees. Only accessible by Admins. Project Managers cannot view or edit this page.
 
 #### Features & Functions:
 * **Roster List:** Displays the name, email, role, status (*Active*, *Invited*, or *Blocked*), and last login timestamp of all team members.
